@@ -56,7 +56,7 @@ from openpyxl.drawing import Image as pyxlImage
 
 LOG = multiprocessing.get_logger()
 
-def read_marks(frontdir, form, backdir=None, pool=None, r_post=False):
+def read_marks(frontdir, form, backdir=None, pool=None):
     """Main app: run front side, back side, R script"""
     images, choices = exam_group(frontdir, FORMS[form]['front'], pool)
     
@@ -65,9 +65,6 @@ def read_marks(frontdir, form, backdir=None, pool=None, r_post=False):
         choices = num.hstack((choices, backchoices))
             
     write_exam_group(images, choices, join(frontdir,'OMR'))
-
-    if r_post:
-        run_r_post([abspath(frontdir)])
 
     LOG.info('Completed')
 
@@ -477,14 +474,7 @@ def write_xls_images(wb, name_images, scores):
     
     return wb
 
-def run_r_post(args=[], r_script='main.R'):
-    """Run R post script if R is installed. """
-    try:
-        if subprocess.call(['Rscript','--version']) == 0:
-            subprocess.call(["Rscript", join(dirname(__file__), r_script)] + args)
-    except:
-        pass
-                    
+
 class OmrGui(Tkinter.Frame):
     """GUI for Bubble Vision optical mark reader"""
     def __init__(self, master):
