@@ -1,8 +1,6 @@
 
 python omr\exam.py --help
 
-python -m doctest omr\exam.py -v
-
 nosetests -v
 
 python omr\exam.py
