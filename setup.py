@@ -11,7 +11,7 @@ setup(
     packages = ["omr", "test_omr"],
     package_dir = {"omr": "omr", 
                    "test_omr": "test_omr"},    
-    scripts = ["omr/exam.py", ], 
+    scripts = ["omr/exam.py",], 
     install_requires = ["numpy >= 1.8.0", 
                         "pillow >= 2.2.1",
                         "openpyxl >= 1.6.2"],
