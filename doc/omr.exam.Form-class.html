@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>omr.exam.Form</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="omr.exam-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Bubble Vision</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;omr ::
+        <a href="omr.exam-module.html">Module&nbsp;exam</a> ::
+        Class&nbsp;Form
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="omr.exam.Form-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Form</h1><p class="nomargin-top"><span class="codelink"><a href="omr.exam-pysrc.html#Form">source&nbsp;code</a></span></p>
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="omr.exam.Form882E_front-class.html">Form882E_front</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>Represents a generic exam form. Specify answer grid size properties, reference and info rectangles</p>
+<div class="rst-section" id="rst-form-specification">
+<h1 class="heading">Form specification</h1>
+<p>Grid parameters specified as [height, width] in pixels.</p>
+<table border="1" class="rst-docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="rst-head">Parameter</th>
+<th class="rst-head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>size</td>
+<td>h,w size of answer bubble matrix (n questions, n answer choices)</td>
+</tr>
+<tr><td>pos</td>
+<td>h,w coordinate of answer matrix upper left corner (i0, j0) in pixels</td>
+</tr>
+<tr><td>bub</td>
+<td>h,w answer bubble surrounding box in pixels (float ok)</td>
+</tr>
+<tr><td>space</td>
+<td>h,w unit cell edge lengths in pixels (float ok)</td>
+</tr>
+<tr><td>offset</td>
+<td>h,w fitted reference offset applied to pos</td>
+</tr>
+</tbody>
+</table>
+<pre class="rst-literal-block">
+|
+|        |-bub-|
+|        |---space---|
+|
+|       j0    j1    j2
+|        ___________________
+|    i0 |0                  |
+|       | [ A ]       [ B ] |
+|    i1 |      1            |
+|       |                   |
+|    i2 |            2      |
+|       | [ A ]       [ B ] |
+|       |___________________|
+|
+</pre>
+</div>
+<div class="rst-section" id="rst-region-rectangles">
+<h1 class="heading">Region rectangles</h1>
+<p>rectangels are specified as [height min, height max, width min, width max]</p>
+<table border="1" class="rst-docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="rst-head">Parameter</th>
+<th class="rst-head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>refzone</td>
+<td>list of black reference box rectangles (or empty list). boxes go</td>
+</tr>
+<tr><td>info</td>
+<td>name info rectangle (or None)</td>
+</tr>
+<tr><td>score</td>
+<td>machine printed score rectangle (or None)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="rst-section" id="rst-image-properties">
+<h1 class="heading">Image properties</h1>
+<table border="1" class="rst-docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="rst-head">Parameter</th>
+<th class="rst-head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>expected_dpi</td>
+<td>h,w image dpi (CRITICAL - relates pixels to distance)</td>
+</tr>
+<tr><td>expected_size</td>
+<td>h,w expected image size (after conversion to proper dpi)</td>
+</tr>
+<tr><td>size_tolerance</td>
+<td>allowed percent error in actual image size</td>
+</tr>
+<tr><td>contrast</td>
+<td>black/white contrast split value 0&lt;=x&lt;=255</td>
+</tr>
+<tr><td>trim_std</td>
+<td>minimum stdev to remove image edge during trimming</td>
+</tr>
+<tr><td>radius</td>
+<td>reference box fitting search radius in pixels</td>
+</tr>
+<tr><td>min_ref</td>
+<td>minimum pixel value for black box match 0&lt;=x&lt;=255</td>
+</tr>
+<tr><td>ref_x, ref_y</td>
+<td>validation image reference fit summary panel coordinates</td>
+</tr>
+<tr><td>signal</td>
+<td>minimum ratio of darkest to second darkest answer choice</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      initialize form, calculate default coordinates.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="calc_coords"></a><span class="summary-sig-name">calc_coords</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      calculate (m, n, 4) sized matrix of answer bubble
+hmin,hmax,wmin,wmax coordinates</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.calc_coords">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="check_size"></a><span class="summary-sig-name">check_size</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      Check input image dimensions are within form tolerance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.check_size">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="choose_answers"></a><span class="summary-sig-name">choose_answers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">means</span>)</span><br />
+      choose darkest answer choice. assign poor signal choices -1</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.choose_answers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="fit_reference"></a><span class="summary-sig-name">fit_reference</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      Get the best translation offset by fitting black box
+reference zones</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.fit_reference">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_bubble_means"></a><span class="summary-sig-name">get_bubble_means</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      get the mean pixel value in each answer bubble region</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.get_bubble_means">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="load_image"></a><span class="summary-sig-name">load_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">imfile</span>)</span><br />
+      open input image, correct dpi, return greyscale array</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.load_image">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="overlay_bubble_means"></a><span class="summary-sig-name">overlay_bubble_means</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">means</span>)</span><br />
+      overlay the bubble region mean values onto the image</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.overlay_bubble_means">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="overlay_ref_fit"></a><span class="summary-sig-name">overlay_ref_fit</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">mean</span>,
+        <span class="summary-sig-arg">fit</span>,
+        <span class="summary-sig-arg">off</span>=<span class="summary-sig-default">25</span>)</span><br />
+      draw crosses at the corners of the initial and fitted
+reference boxes</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.overlay_ref_fit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_offset"></a><span class="summary-sig-name">set_offset</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">r</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">c</span>=<span class="summary-sig-default">0</span>)</span><br />
+      update positional parameters with offset, recalculate
+coordinates matrix</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.set_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="trim_margins"></a><span class="summary-sig-name">trim_margins</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      Recursivly trim blank edges (low stdev) from input array</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.trim_margins">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="write_info_image"></a><span class="summary-sig-name">write_info_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">name_file</span>)</span><br />
+      extract the forms info box region and stack the score box</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.write_info_image">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="write_validation"></a><span class="summary-sig-name">write_validation</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">val_file</span>)</span><br />
+      write the greyscale image that has been marked with reference
+fits and bubble means</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.write_validation">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="bub"></a><span class="summary-name">bub</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="contrast"></a><span class="summary-name">contrast</span> = <code title="0.0">0.0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="expected_dpi"></a><span class="summary-name">expected_dpi</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="expected_size"></a><span class="summary-name">expected_size</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="info"></a><span class="summary-name">info</span> = <code title="None">None</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="min_ref"></a><span class="summary-name">min_ref</span> = <code title="0.0">0.0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="offset"></a><span class="summary-name">offset</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="pos"></a><span class="summary-name">pos</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="radius"></a><span class="summary-name">radius</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ref_x"></a><span class="summary-name">ref_x</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ref_y"></a><span class="summary-name">ref_y</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="refzone"></a><span class="summary-name">refzone</span> = <code title="None">None</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="score"></a><span class="summary-name">score</span> = <code title="None">None</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="signal"></a><span class="summary-name">signal</span> = <code title="0.0">0.0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="size"></a><span class="summary-name">size</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="size_tolerance"></a><span class="summary-name">size_tolerance</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="space"></a><span class="summary-name">space</span> = <code title="[0, 0]"><code class="variable-group">[</code>0<code class="variable-op">, </code>0<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="trim_std"></a><span class="summary-name">trim_std</span> = <code title="0">0</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="omr.exam-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Bubble Vision</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    <a href="epydoc-log.html">Generated by Epydoc
+    3.0.1 on Sun Nov 17 09:25:58 2013</a>
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

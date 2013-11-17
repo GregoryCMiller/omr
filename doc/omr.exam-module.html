@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>omr.exam</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Bubble Vision</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;omr ::
+        Module&nbsp;exam
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="omr.exam-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module exam</h1><p class="nomargin-top"><span class="codelink"><a href="omr.exam-pysrc.html">source&nbsp;code</a></span></p>
+<p>Extract answer choices from scanned jpg bubble forms.</p>
+<div class="rst-section" id="rst-graphical-user-interface">
+<h1 class="heading">Graphical User Interface</h1>
+<pre class="rst-literal-block">
+$ exam.py
+</pre>
+</div>
+<div class="rst-section" id="rst-command-line">
+<h1 class="heading">Command Line</h1>
+<pre class="rst-literal-block">
+$ exam.py imagedir [options]
+</pre>
+<dl class="rst-docutils">
+<dt>imagedir</dt>
+<dd>Input image directory (front side). Lowest numbered image identifies the key.</dd>
+<dt><code class="link">--backdir=BACKDIR</code></dt>
+<dd>Optional back side image directory</dd>
+<dt><code class="link">--form=FORM</code></dt>
+<dd>Set the form string (default and only supported=&quot;882E&quot;)</dd>
+<dt><code class="link">--help</code></dt>
+<dd>Show this help message and exit</dd>
+</dl>
+</div>
+<div class="rst-section" id="rst-output">
+<h1 class="heading">Output</h1>
+<dl class="rst-docutils">
+<dt>validation images</dt>
+<dd>Answer bubble means and reference box fits drawn over each input
+image.</dd>
+<dt>results.xlsx</dt>
+<dd><dl class="rst-first rst-last rst-docutils">
+<dt>summary</dt>
+<dd>Image path, name box image, and total score for each test.</dd>
+<dt>questioninfo</dt>
+<dd>Answer choice counts by question. Key excluded.</dd>
+<dt>scoring</dt>
+<dd>Answer choice matches key (0/1). Same indices as choices. Score
+is 0 if key is -1.</dd>
+<dt>choices</dt>
+<dd>Answer choice matrix. Tests in rows and questions in columns.
+0-4=A-E, -1=n/a.</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="rst-section" id="rst-install">
+<h1 class="heading">Install</h1>
+<pre class="rst-literal-block">
+$ pip install omr
+$ pip install --upgrade omr
+$ pip uninstall omr
+</pre>
+<ul class="rst-simple">
+<li>Requirements<ul>
+<li><a class="rst-reference external" href="http://www.python.org" target="_top">python</a> 2.7+</li>
+<li><a class="rst-reference external" href="http://www.pip-installer.org/en/latest/installing.html" target="_top">pip</a> <tt class="rst-docutils literal">$ easy_install pip</tt></li>
+</ul>
+</li>
+<li>Dependencies (installed by pip)<ul>
+<li><a class="rst-reference external" href="http://www.numpy.org" target="_top">numpy 1.8.0</a> numerical array object</li>
+<li><a class="rst-reference external" href="http://python-imaging.github.io/" target="_top">pillow 2.2.1</a> image module</li>
+<li><a class="rst-reference external" href="http://openpyxl.readthedocs.org/en/latest/" target="_top">openpyxl 1.6.2</a> write xlsx files</li>
+</ul>
+</li>
+</ul>
+</div>
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="omr.exam.Form-class.html" class="summary-name">Form</a><br />
+      Represents a generic exam form. Specify answer grid size properties, reference and info rectangles
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="omr.exam.Form882E_back-class.html" class="summary-name">Form882E_back</a><br />
+      scantron form 882E back side or equivilant
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="omr.exam.Form882E_front-class.html" class="summary-name">Form882E_front</a><br />
+      scantron form 882E front side or equivilant
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="omr.exam.OmrGui-class.html" class="summary-name">OmrGui</a><br />
+      GUI to select input args
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="omr.exam-module.html#Main" class="summary-sig-name">Main</a>(<span class="summary-sig-arg">frontdir</span>,
+        <span class="summary-sig-arg">form</span>,
+        <span class="summary-sig-arg">backdir</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">pool</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Main application</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Main">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="center_on_box"></a><span class="summary-sig-name">center_on_box</span>(<span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">radius</span>,
+        <span class="summary-sig-arg">min_ref</span>,
+        <span class="summary-sig-arg">xmin</span>,
+        <span class="summary-sig-arg">xmax</span>,
+        <span class="summary-sig-arg">ymin</span>,
+        <span class="summary-sig-arg">ymax</span>,
+        <span class="summary-sig-arg">na_val</span>=<span class="summary-sig-default">-9999</span>)</span><br />
+      find the best offset for a black box by trying all within a
+circular search radius</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#center_on_box">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="command_args"></a><span class="summary-sig-name">command_args</span>()</span><br />
+      parse command line arguments returning namespace object. adds --help option</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#command_args">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="omr.exam-module.html#exam_group" class="summary-sig-name">exam_group</a>(<span class="summary-sig-arg">testdir</span>,
+        <span class="summary-sig-arg">form</span>,
+        <span class="summary-sig-arg">pool</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">outname</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">OMR</code><code class="variable-quote">'</code></span>)</span><br />
+      process all tests in a directory returning image path list and
+choice matrix</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#exam_group">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="omr.exam-module.html#process_exam" class="summary-sig-name">process_exam</a>(<span class="summary-sig-arg">imfile</span>,
+        <span class="summary-sig-arg">form</span>)</span><br />
+      Process input test image returning answer choices</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#process_exam">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="star_process_exam"></a><span class="summary-sig-name">star_process_exam</span>(<span class="summary-sig-arg">args</span>)</span><br />
+      wrapper for process_exam() that takes list of args</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#star_process_exam">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="omr.exam-module.html#write_exam_group" class="summary-sig-name">write_exam_group</a>(<span class="summary-sig-arg">images</span>,
+        <span class="summary-sig-arg">choices</span>,
+        <span class="summary-sig-arg">outdir</span>,
+        <span class="summary-sig-arg">csv</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">xls</span>=<span class="summary-sig-default">True</span>)</span><br />
+      write exam group output</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#write_exam_group">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="write_xls_array"></a><span class="summary-sig-name">write_xls_array</span>(<span class="summary-sig-arg">workbook</span>,
+        <span class="summary-sig-arg">inarray</span>,
+        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">header</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">row</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">col</span>=<span class="summary-sig-default">0</span>)</span><br />
+      create a new sheet in xlsx workbook, write header and array.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#write_xls_array">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="write_xls_images"></a><span class="summary-sig-name">write_xls_images</span>(<span class="summary-sig-arg">wb</span>,
+        <span class="summary-sig-arg">name_images</span>,
+        <span class="summary-sig-arg">scores</span>,
+        <span class="summary-sig-arg">header</span>=<span class="summary-sig-default"><code class="variable-group">{</code>0<code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Info</code><code class="variable-quote">'</code><code class="variable-op">, </code>1<code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Score</code><code class="variable-quote">'</code><code class="variable-op">, </code>2<code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">File</code><code class="variable-quote">'</code><code class="variable-group">}</code></span>,
+        <span class="summary-sig-arg">widths</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">A</code><code class="variable-quote">'</code><code class="variable-op">: </code>47<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">B</code><code class="variable-quote">'</code><code class="variable-op">: </code>5<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">C</code><code class="variable-quote">'</code><code class="variable-op">: </code>20<code class="variable-group">}</code></span>,
+        <span class="summary-sig-arg">height</span>=<span class="summary-sig-default">23</span>,
+        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">summary</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">scale</span>=<span class="summary-sig-default"><code class="variable-group">[</code>0.65<code class="variable-op">, </code>0.65<code class="variable-group">]</code></span>)</span><br />
+      write xlsx file containing a table of extracted info box images,
+score, and file name for each test</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#write_xls_images">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="omr.exam-module.html#FORMS" class="summary-name">FORMS</a> = <code title="{'882E': {'back': &lt;class omr.exam.Form882E_back at 0x03394DC0&gt;,
+          'front': &lt;class omr.exam.Form882E_front at 0x03394D88&gt;}}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">882E</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">back</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_back at 0x0<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="LOG"></a><span class="summary-name">LOG</span> = <code title="&lt;logging.Logger object at 0x031E0370&gt;">&lt;logging.Logger object at 0x031E0370&gt;</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'omr'"><code class="variable-quote">'</code><code class="variable-string">omr</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="Main"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">Main</span>(<span class="sig-arg">frontdir</span>,
+        <span class="sig-arg">form</span>,
+        <span class="sig-arg">backdir</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">pool</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="omr.exam-pysrc.html#Main">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Main application</p>
+<ul class="rst-simple">
+<li>process front side</li>
+<li>(optional) process and join back side</li>
+<li>write output</li>
+</ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="exam_group"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">exam_group</span>(<span class="sig-arg">testdir</span>,
+        <span class="sig-arg">form</span>,
+        <span class="sig-arg">pool</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">outname</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">OMR</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="omr.exam-pysrc.html#exam_group">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>process all tests in a directory returning image path list and
+choice matrix</p>
+<ul class="rst-simple">
+<li>find .jpg images, sort in place by first 2 numeric blocks</li>
+<li>Create output directory in input test image dir.</li>
+<li>Run each test (possibly in parallel).</li>
+</ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="process_exam"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">process_exam</span>(<span class="sig-arg">imfile</span>,
+        <span class="sig-arg">form</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="omr.exam-pysrc.html#process_exam">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process input test image returning answer choices</p>
+<ul class="rst-simple">
+<li>load image (load, check dpi, trim margins, check size)</li>
+<li>fit image reference boxes</li>
+<li>extract answer bubble means, choices</li>
+<li>write name image</li>
+<li>write validation image</li>
+</ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="write_exam_group"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">write_exam_group</span>(<span class="sig-arg">images</span>,
+        <span class="sig-arg">choices</span>,
+        <span class="sig-arg">outdir</span>,
+        <span class="sig-arg">csv</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">xls</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="omr.exam-pysrc.html#write_exam_group">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>write exam group output</p>
+<ul class="rst-simple">
+<li>Score tests using first image as the key.</li>
+<li>Count choice frequency by question.</li>
+<li>Write csv and xlsx data files</li>
+</ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="FORMS"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">FORMS</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">882E</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">back</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_back at 0x03394DC0&gt;<code class="variable-op">,</code>
+          <code class="variable-quote">'</code><code class="variable-string">front</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_front at 0x03394D88&gt;<code class="variable-group">}</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Bubble Vision</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    <a href="epydoc-log.html">Generated by Epydoc
+    3.0.1 on Sun Nov 17 09:25:58 2013</a>
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

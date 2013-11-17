@@ -1,39 +1,81 @@
 #!/usr/bin/python
 #Copyright (C) 2013 Greg Miller <gmill002@gmail.com>
 """
-BubbleVision: Optical Mark Reader
+==================================
+Bubble Vision: Optical Mark Reader
+==================================
 
-Functions               | Description                                         |
------------------------ | --------------------------------------------------- |
-read_marks              | Main command line application function              |
-exam_group              | Process a set of exams contained in a directory     |
-write_exam_group        | Write exam group output files                       |
-process_exam            | Extract answer choices from single image            |
+Extract answer choices from scanned jpg bubble forms.
 
-
-Form Methods            | Description                                         |
------------------------ | --------------------------------------------------- |
-load_image              | Load, check dpi, size, convert to grey array        |
-trim_margins            | Remove blank margins using min std threshold        |
-check_size              | Verify size and aspect match form specifications    |
-fit_reference           | Fit reference boxes                                 |                 
-draw_reference          | Draw reference fits                                 |
-get_bubble_means        | Extract answer bubble pixel values                  |
-choose_answers          | Select answer choices                               |
-write_bubble_means      | Draw bubble means over extracted region             |
-get_info_image          | Return info section of image                        |
+Graphical User Interface
+------------------------
+::
+    
+    $ exam.py
 
 
-Utility Functions       | Description                                         |
------------------------ | --------------------------------------------------- |
-get_arguments           | Command line argument parser. Makes help dialog     |
-OmrGui (class)          | Tkinter GUI to select input args                    |
-run_r_post              | Run r post processing script                        |
-center_on_box           | Find best offset for a black reference box          |
-write_xls_array         | write an array to a new sheet in an xlsx workbook   |
-write_xls_images        | write name box image onto rows of the worksheet     | 
+Command Line
+------------
+::
+    
+    $ exam.py imagedir [options]
 
 
+imagedir           
+  Input image directory (front side). Lowest numbered image identifies the key.
+
+`--backdir=BACKDIR`
+  Optional back side image directory                                                
+
+`--form=FORM`        
+  Set the form string (default and only supported="882E")                       
+
+`--help`             
+  Show this help message and exit                                               
+
+
+Output
+------
+
+validation images
+    Answer bubble means and reference box fits drawn over each input
+    image.
+    
+results.xlsx
+    summary            
+        Image path, name box image, and total score for each test.
+    
+    questioninfo       
+        Answer choice counts by question. Key excluded.
+    
+    scoring            
+        Answer choice matches key (0/1). Same indices as choices. Score
+        is 0 if key is -1.
+    
+    choices            
+        Answer choice matrix. Tests in rows and questions in columns.
+        0-4=A-E, -1=n/a.
+
+
+Install
+-------
+::
+    
+    $ pip install omr
+    $ pip install --upgrade omr
+    $ pip uninstall omr
+    
+* Requirements
+
+  * `python <http://www.python.org>`_ 2.7+
+  * `pip <http://www.pip-installer.org/en/latest/installing.html>`_ ``$ easy_install pip``
+
+* Dependencies (installed by pip)
+
+  * `numpy 1.8.0 <http://www.numpy.org>`_ numerical array object
+  * `pillow 2.2.1 <http://python-imaging.github.io/>`_ image module
+  * `openpyxl 1.6.2 <http://openpyxl.readthedocs.org/en/latest/>`_ write xlsx files
+  
 """
 import argparse
 import glob
@@ -51,13 +93,17 @@ from tkFileDialog import askdirectory
 
 import numpy as num
 from PIL import Image
-from openpyxl import Workbook
-from openpyxl.drawing import Image as pyxlImage
+import openpyxl, openpyxl.drawing
 
 LOG = multiprocessing.get_logger()
 
-def read_marks(frontdir, form, backdir=None, pool=None):
-    """Main app: run front side, back side, R script"""
+def Main(frontdir, form, backdir=None, pool=None):
+    """Main application
+    
+    - process front side
+    - (optional) process and join back side 
+    - write output
+    """
     images, choices = exam_group(frontdir, FORMS[form]['front'], pool)
     
     if backdir:
@@ -72,9 +118,10 @@ def exam_group(testdir, form, pool=None, outname='OMR'):
     """process all tests in a directory returning image path list and 
     choice matrix
     
-    1. find .jpg images, sort in place by first 2 numeric blocks
-    2. Create output directory in input test image dir.  
-    3. Run each test (possibly in parallel). """
+    - find .jpg images, sort in place by first 2 numeric blocks
+    - Create output directory in input test image dir.  
+    - Run each test (possibly in parallel). 
+    """
     images = glob.glob(join(abspath(testdir), '*.jpg'))
     images.sort(key=lambda x: float(".".join(re.findall('[0-9]+', basename(x))[:2])))
     if not images:
@@ -85,34 +132,35 @@ def exam_group(testdir, form, pool=None, outname='OMR'):
     [os.makedirs(join(outdir, s)) for s in ['', 'validation', 'names']]
     
     args = [[im, form()] for im in images]
-    if pool:
-        choices = pool.map(star_process_exam, args, chunksize=1)
-    else:
-        choices = map(star_process_exam, args)
     
-    return images, num.vstack(choices)
+    if pool:
+        choice_list = pool.map(star_process_exam, args, chunksize=1)
+    else:
+        choice_list = map(star_process_exam, args)
+        
+    return images, num.vstack(choice_list)
 
 def write_exam_group(images, choices, outdir, csv=False, xls=True):
     """write exam group output
     
-    1. Score tests using first image as the key.  
-    2. Count choice frequency by question. 
-    3. Write csv data files 
-    4. write xlsx data file"""
+    - Score tests using first image as the key.  
+    - Count choice frequency by question. 
+    - Write csv and xlsx data files 
+    """
     key = num.array(choices[0])   # key is the first test
     key[key == -1] = -2           # -2 key allows -1 tests to score 0
     scoring = choices == key      # score the tests
     total_score = num.sum(scoring, axis=1)
     
+    counts_header = ['Question', 'Key', 'CorrectCount', 
+                     'None(-1)', 'A(0)', 'B(1)', 'C(2)', 'D(3)', 'E(4)']
+                     
     counts = num.zeros((choices.shape[1], 9))
-    counts[:, 0] = num.arange(1, choices.shape[1] + 1) # question
+    counts[:, 0] = 1 + num.arange(choices.shape[1])    # question
     counts[:, 1] = choices[0, :]                       # key
-    counts[:, 2] = num.sum(scoring[1:, :], axis=0)     # correctcount
+    counts[:, 2] = num.sum(scoring[1:, :], axis=0)     # correct count by question
     for i in range(counts.shape[0]):                   # choice frequencies by question
         counts[i, 3:9], x = num.histogram(choices[1:, i], bins=range(-1, 6))
-    
-    counts_header = ['Question', 'Key', 'CorrectCount', 'NoChoice', 
-                     'A(0)', 'B(1)', 'C(2)', 'D(3)', 'E(4)']
     
     if csv:
         num.savetxt(join(outdir, 'imagefiles.csv'), map(basename, images), fmt='%s')     
@@ -120,39 +168,48 @@ def write_exam_group(images, choices, outdir, csv=False, xls=True):
         num.savetxt(join(outdir, 'scoring.csv'), scoring, fmt='%i', delimiter=',')
         num.savetxt(join(outdir, 'questioninfo.csv'), counts, fmt='%i', delimiter=',', 
                     header=",".join(counts_header))
-    
+
     if xls:
         name_files = glob.glob(join(outdir, 'names', "*"))
-        
-        wb = Workbook()
+        wb = openpyxl.Workbook()
         wb = write_xls_images(wb, name_files, total_score)
         wb = write_xls_array(wb, counts, 'question info', counts_header)
         wb = write_xls_array(wb, scoring.astype('i'), 'scoring')
         wb = write_xls_array(wb, choices, 'choices')    
         wb.save(join(outdir, 'results.xlsx'))
     
+    
 def star_process_exam(args):
     """wrapper for process_exam() that takes list of args"""
     return process_exam(*args)
     
 def process_exam(imfile, form):
-    """Process a test image given the path and form object"""
+    """Process input test image returning answer choices
+    
+    - load image (load, check dpi, trim margins, check size)      
+    - fit image reference boxes
+    - extract answer bubble means, choices
+    - write name image 
+    - write validation image 
+    
+    """
     # load image (load, check dpi, trim margins, check size)      
     img = form.load_image(imfile)
     img = form.trim_margins(img)     
     form.check_size(img)
     
     # fit image reference boxes
-    meanfit, fit = form.fit_reference(img)    
-    img = form.overlay_ref_fit(img, meanfit, fit)    
-    form.set_offset(*meanfit)
+    if form.refzone:
+        meanfit, fit = form.fit_reference(img)    
+        img = form.overlay_ref_fit(img, meanfit, fit)    
+        form.set_offset(*meanfit)
     
     # extract answer bubble means, choices
     bubble_means = form.get_bubble_means(img)
     choice = form.choose_answers(bubble_means)
     img = form.overlay_bubble_means(img, bubble_means)
     
-    # write name image 
+    # write name image
     name_file = join(dirname(imfile), 'OMR', 'names', basename(imfile)[:-3] + 'png')
     form.write_info_image(img, name_file)
     
@@ -168,70 +225,98 @@ def process_exam(imfile, form):
     return choice
 
 class Form:
-    """Define rectangles for an answer bubble grid, reference, and info boxes 
-    for a generic exam form.   
-    
-    Methods                 | Description                                       |
-    ----------------------- | ------------------------------------------------- |
-    calc_coords             | compute internal coordinates matrix               |
-    set_offset              | modify offset and recompute coordinates           |
-    check_size              | Verify image size matches form specifications     |
-    fit_reference           | Fit reference boxes                               |                 
-    draw_reference          | Draw reference fits                               |
-    get_bubble_means        | Extract answer bubble pixel values                |
-    choose_answers          | Select answer choices                             |
-    write_bubble_means      | Draw bubble means over extracted region           |
-    get_info_image          | Return info section of image                      |
-    
-    User Defined Form
-    
-      Rename Form882E_front and add it to FORMS. Rough measurements
-    can be made in paint after cropping. Fine adjust using validation
-    images and reference fit offsets
-    
-       j0    j1    j2
-        ___________________
-    i0 |0                  |  (0) pos    x,y ulc coordinate
-       | [ A ]       [ B ] |  (1) bub    x,y size of answer bubble rectangle =i2-i1
-    i1 |      1            |  (2) space  x,y size of matrix unit cell =i3-i1
-       |                   |
-    i2 |            2      |
-       | [ A ]       [ B ] |
-       |___________________|
+    """Represents a generic exam form. Specify answer grid size properties, reference and info rectangles 
 
     
-    Form.coords stores each answer bubble rectangle as 4 values (i0,
-    i1, j0, j1)
+    Form specification
+    ------------------  
     
-    Most length parameters (ie space) can be float and are rounded after
-    calculations 
+    Grid parameters specified as [height, width] in pixels.  
+    
+    ================  ===============================================================================
+    Parameter         Description
+    ================  ===============================================================================
+    size              h,w size of answer bubble matrix (n questions, n answer choices)
+    pos               h,w coordinate of answer matrix upper left corner (i0, j0) in pixels
+    bub               h,w answer bubble surrounding box in pixels (float ok)         
+    space             h,w unit cell edge lengths in pixels (float ok)
+    offset            h,w fitted reference offset applied to pos
+    ================  ===============================================================================
+    
+    ::
+        
+        |
+        |        |-bub-|
+        |        |---space---|
+        |
+        |       j0    j1    j2
+        |        ___________________
+        |    i0 |0                  |  
+        |       | [ A ]       [ B ] |  
+        |    i1 |      1            |  
+        |       |                   |
+        |    i2 |            2      |
+        |       | [ A ]       [ B ] |
+        |       |___________________|
+        |
+
+
+    Region rectangles
+    -----------------
+
+    rectangels are specified as [height min, height max, width min, width max]
+    
+    ================  ==========================================================
+    Parameter         Description
+    ================  ==========================================================
+    refzone           list of black reference box rectangles (or empty list). boxes go 
+    info              name info rectangle (or None)
+    score             machine printed score rectangle (or None)    
+    ================  ==========================================================
+    
+    Image properties 
+    ----------------
+    
+    ================  ====================================================================
+    Parameter         Description
+    ================  ====================================================================
+    expected_dpi      h,w image dpi (CRITICAL - relates pixels to distance)
+    expected_size     h,w expected image size (after conversion to proper dpi) 
+    size_tolerance    allowed percent error in actual image size 
+    contrast          black/white contrast split value 0<=x<=255
+    trim_std          minimum stdev to remove image edge during trimming
+    radius            reference box fitting search radius in pixels
+    min_ref           minimum pixel value for black box match 0<=x<=255
+    ref_x, ref_y      validation image reference fit summary panel coordinates
+    signal            minimum ratio of darkest to second darkest answer choice    
+    ================  ====================================================================
+    
     
     """
-    size   = [0, 0]  # h,w size of answer bubble matrix (questions, choices)
-    dpi    = [0, 0]  # h,w image dpi (CRITICAL - relates pixels to distance)
-    offset = [0, 0]  # h,w current fitted offset applied to pos coordinates
-    pos    = [0, 0]  # h,w coordinate of answer matrix upper left corner
-    bub    = [0, 0]  # h,w height and width of answer bubble surrounding box        
-    space  = [0, 0]  # h,w unit cell edge lengths
+    size           = [0, 0]  
+    offset         = [0, 0]
+    pos            = [0, 0] 
+    bub            = [0, 0]        
+    space          = [0, 0]
     
-    # rectangles specified as [hmin,hmax,wmin,wmax]
-    info    = [0, 0, 0, 0]   # write in name info rectangle
-    score   = [0, 0, 0, 0]   # machine printed score rectangle
-    refzone = [[0, 0, 0, 0], # list rectangles for black reference boxes
-               [0, 0, 0, 0], 
-               [0, 0, 0, 0],               
-               [0, 0, 0, 0]]
-
-    expected_size  = [0, 0]  # h,w expected image size (after conversion to proper dpi) 
-    size_tolerance = [0, 0]  # allowed percent error in actual image size   
-    ref_x, ref_y   = 0, 0    # validation image reference fit summary panel coordinates
+    info           = None # [0, 0, 0, 0]
+    score          = None # [0, 0, 0, 0]   
+    refzone        = None 
+                     # [[0, 0, 0, 0],
+                      #[0, 0, 0, 0], 
+                      #[0, 0, 0, 0],               
+                      #[0, 0, 0, 0]]
     
-    CONTRAST = 0.0 * 255 # black/white contrast split value 0<=x<=255
-    TRIM_STD = 0         # minimum stdev to remove image edge during trimming
-    RADIUS   = 0         # reference box fitting search radius in pixels
-    MIN_REF  = 0.0 * 255 # min blackness for successful black box match 0<=x<=255
-    SIGNAL   = 0.0       # min ratio of selected to mean unselected answer choice brightness
-
+    expected_dpi   = [0, 0]
+    expected_size  = [0, 0] 
+    size_tolerance = [0, 0]
+    ref_x, ref_y   = 0, 0 
+    contrast       = 0.0 * 255 
+    trim_std       = 0         
+    radius         = 0         
+    min_ref        = 0.0 * 255 
+    signal         = 0.0       
+    
     def __init__(self):
         """initialize form, calculate default coordinates.  """
         self.calc_coords()
@@ -256,13 +341,14 @@ class Form:
         self.pos = [self.pos[0] + r, self.pos[1] + c]
         self.score = num.array(self.score) + num.array([r, r, c, c])
         self.info = num.array(self.info) + num.array([r, r, c, c])
+        
         self.calc_coords()
     
     def load_image(self, imfile):
-        """return trimmed, greyscale image with correct dpi"""
+        """open input image, correct dpi, return greyscale array"""
         im = Image.open(imfile)          # im = open as PIL image 
         
-        dpi_ratio = num.true_divide(self.dpi, num.array(im.info['dpi']))
+        dpi_ratio = num.true_divide(self.expected_dpi, num.array(im.info['dpi']))
         newsize = (num.array(im.size) * dpi_ratio).astype('i')
         if not all(newsize == num.array(im.size)):
             im = im.resize(newsize, Image.BICUBIC) # change dpi
@@ -272,16 +358,13 @@ class Form:
         return img
 
     def trim_margins(self, img):
-        """Recursivly trim blank edges (low stdev) from input array
-        
-        4 times: rotate the image, check the first row, trim
-        """
+        """Recursivly trim blank edges (low stdev) from input array"""
         oldsize = (0, 0)
         while oldsize != img.shape: # while the size is changing
             oldsize = img.shape
             for i in range(4):                         # 4 times
                 img = num.rot90(img)                   #   rotate 90
-                if num.std(img[0, :]) < self.TRIM_STD: #   if low std
+                if num.std(img[0, :]) < self.trim_std: #   if low std
                     img = img[1:, :]                   #     trim edge 
     
         return img
@@ -296,21 +379,18 @@ class Form:
         
     def fit_reference(self, img):
         """Get the best translation offset by fitting black box
-        reference zones
-        
-        using a b/w image find the best offset for each reference box.
-        return the mean and each reference box"""
-        bw_img = 255 * (img >= self.CONTRAST) 
-        fit = [center_on_box(bw_img, self.RADIUS, self.MIN_REF, *ref) for ref in self.refzone]
+        reference zones"""
+        bw_img = 255 * (img >= self.contrast) 
+        fit = [center_on_box(bw_img, self.radius, self.min_ref, *ref) for ref in self.refzone]
         meanfit = num.mean(num.ma.masked_array(fit, fit == -9999), axis=0).astype('i')
         if meanfit[0] is num.ma.masked:
             raise StandardError('At least one reference box match required')
-        
+    
         return meanfit, fit                  
 
     def get_bubble_means(self, img):
         """get the mean pixel value in each answer bubble region"""
-        bw_img = 255 * (img >= self.CONTRAST)
+        bw_img = 255 * (img >= self.contrast)
         means = num.zeros(self.coords.shape[:2])     
         for (i,j) in itertools.product(*map(range, self.size)):
             i0, i1, j0, j1 = self.coords[i, j, :]
@@ -319,15 +399,12 @@ class Form:
         return means
     
     def choose_answers(self, means):     
-        """choose darkest answer choice. assign poor signal choices -1
-        
-        signal is the ratio of the answer choice to the next darkest
-        choice. """
+        """choose darkest answer choice. assign poor signal choices -1"""
         choice = num.argmin(means, axis=1)
-        if self.SIGNAL:
+        if self.signal:
             sorted_rows = num.sort(means, axis=1)
             signal = sorted_rows[:,1] / sorted_rows[:,0]
-            choice[signal <= self.SIGNAL] = -1
+            choice[signal <= self.signal] = -1
             
         return choice
 
@@ -370,20 +447,21 @@ class Form:
 
     def write_info_image(self, img, name_file):
         """extract the forms info box region and stack the score box"""
-        xmin, xmax, ymin, ymax = self.info
-        nameimg = num.rot90(img[xmin:xmax, ymin:ymax])
+        if self.info not in [[], None]:
+            xmin, xmax, ymin, ymax = self.info
+            nameimg = num.rot90(img[xmin:xmax, ymin:ymax])
     
-        xmin, xmax, ymin, ymax = self.score
-        score = num.rot90(img[xmin:xmax, ymin:ymax])
-        nameimg = num.hstack([nameimg[30:75, :], score])
+            if self.score not in [[], None]:
+                xmin, xmax, ymin, ymax = self.score
+                score = num.rot90(img[xmin:xmax, ymin:ymax])
+                nameimg = num.hstack([nameimg[30:75, :], score])
 
-        Image.fromarray(nameimg).save(name_file)              
+            Image.fromarray(nameimg).save(name_file)
 
 
 class Form882E_front(Form):
     """scantron form 882E front side or equivilant"""
     size    = [50, 5]
-    dpi     = [150, 150]
     pos     = [258, 130]
     space   = [25.2, 49.2]
     bub     = [15, 39]
@@ -394,21 +472,20 @@ class Form882E_front(Form):
                [1574, 1592, 570, 600],
                [1492, 1502, 50, 79]]
     
+    expected_dpi = [150, 150]
     expected_size = [1664, 664]
     size_tolerance = [0.04, 0.04]
     ref_y, ref_x = 525, 175
     
-    CONTRAST = 0.7 * 255 # black/white contrast split value 0<=x<=255
-    TRIM_STD = 4         # minimum stdev to remove image edge during trimming
-    RADIUS   = 10        # reference box fitting search radius in pixels
-    MIN_REF  = 0.5 * 255 # min blackness for successful black box match 0<=x<=255
-    SIGNAL   = 1.10      # min ratio of selected to mean unselected answer choice brightness
+    contrast = 0.7 * 255 
+    trim_std = 4         
+    radius   = 10        
+    min_ref  = 0.5 * 255 
+    signal   = 1.10      
     
 class Form882E_back(Form882E_front):
-    """scantron form 882E back side or equivilant"""        
-    def write_info_image(self, img, name_file):
-        """no info box on form back side"""
-        pass
+    """scantron form 882E back side or equivilant"""
+    info = None
     
 
 # dictionary containing all forms {name:[front,back], }
@@ -416,12 +493,7 @@ FORMS = {'882E': {'front':Form882E_front, 'back':Form882E_back}, }
     
 def center_on_box(img, radius, min_ref, xmin, xmax, ymin, ymax, na_val=-9999):
     """find the best offset for a black box by trying all within a
-    circular search radius
-    
-    list all offset combinations, 
-    filter within circular radius, 
-    get the mean box value for each offset, 
-    return the best fitting offset or <na_val>"""
+    circular search radius"""
     x, y = num.meshgrid(num.arange(-radius, radius), num.arange(-radius, radius))
     coords = [(i, j) for i, j in zip(x.flatten(), y.flatten()) if (i**2 + j**2)**0.5 <= radius]    
     fit = [num.mean(img[(xmin+i):(xmax+i), (ymin+j):(ymax+j)]) for i, j in coords]
@@ -430,9 +502,9 @@ def center_on_box(img, radius, min_ref, xmin, xmax, ymin, ymax, na_val=-9999):
     else:
         return num.array([na_val, na_val]) 
 
-def write_xls_array(wb, a, title=None, header=None, row=0, col=0):
-    """create a new sheet, write header and array.  """
-    ws = wb.create_sheet()
+def write_xls_array(workbook, inarray, title=None, header=None, row=0, col=0):
+    """create a new sheet in xlsx workbook, write header and array. """
+    ws = workbook.create_sheet()
     if title:
         ws.title = title    
     
@@ -440,33 +512,37 @@ def write_xls_array(wb, a, title=None, header=None, row=0, col=0):
         [setattr(ws.cell(row=row,column=col+j), 'value', h) for j, h in enumerate(header)]
         row += 1
             
-    for i,j in itertools.product(*map(range, a.shape)):
-        setattr(ws.cell(row=row+i, column=col+j), 'value', a[i, j])
+    for i,j in itertools.product(*map(range, inarray.shape)):
+        setattr(ws.cell(row=row+i, column=col+j), 'value', inarray[i, j])
     
-    return wb
+    return workbook
     
-def write_xls_images(wb, name_images, scores):
+def write_xls_images(wb, name_images, scores, header={0:'Info', 1:'Score', 2:'File'}, 
+    widths = {'A':47, 'B':5, 'C':20}, height=23, title='summary', scale=[0.65, 0.65]):
     """write xlsx file containing a table of extracted info box images,
     score, and file name for each test"""
     ws = wb.get_active_sheet()
-    ws.title = 'summary'
+    ws.title = title
     
-    header = {0:'Info', 1:'Score', 2: 'File'}
+    #write header
     [setattr(ws.cell(row=0,column=k), 'value', v) for k,v in header.items()]
     
+    # write data values
     for row, (score, name_file) in enumerate(zip(scores, name_images)):
         ws.cell(row=row+1, column=1).value = score
         ws.cell(row=row+1, column=2).value = basename(name_file)
     
-    # row heights must be set after the row is filled but before the image is anchored
-    widths = {'A':47, 'B':5, 'C':20}
+    #set row heights and col widths 
     [setattr(ws.column_dimensions[k], 'width', v) for k, v in widths.items()]
-    [setattr(ws.row_dimensions[k], 'height', 23) for k in ws.row_dimensions.keys()]
+    [setattr(ws.row_dimensions[k], 'height', height) for k in ws.row_dimensions.keys()]
     
-    try:
-        size = pyxlImage(name_images[0]).image.size * num.array((0.65, 0.65))
+    if not name_images:
+        ws.cell(row=1, column=0).value = 'ERROR: images could not be loaded'
+        
+    try: #insert each image
+        size = openpyxl.drawing.Image(name_images[0]).image.size * num.array(scale)
         for r, im in enumerate(name_images):
-            img = pyxlImage(im, size=size)
+            img = openpyxl.drawing.Image(im, size=size)
             img.anchor(ws.cell(row=r+1, column=0))
             ws.add_image(img)
     except:
@@ -476,7 +552,7 @@ def write_xls_images(wb, name_images, scores):
 
 
 class OmrGui(Tkinter.Frame):
-    """GUI for Bubble Vision optical mark reader"""
+    """GUI to select input args"""
     def __init__(self, master):
         """initialize frame, create output variables and widgets, verify
         command and get help text"""
@@ -511,7 +587,7 @@ class OmrGui(Tkinter.Frame):
             self.run_app()
     
     def run_app(self):
-        """collect and verify selected arguments, run main
+        """collect and verify user selected arguments, run main
         application"""
         if not self.cmd:
             self.insert_text('ERROR: No application!\n')
@@ -541,7 +617,7 @@ class OmrGui(Tkinter.Frame):
             [self.insert_text(l, see) for l in iter(p.stdout.readline,'')]
             
     def insert_text(self, text, see=Tkinter.END):
-        """insert text into text box"""
+        """insert string into gui text box"""
         self.text.config(state=Tkinter.NORMAL)
         self.text.insert(Tkinter.END, text)
         self.text.config(state=Tkinter.DISABLED)
@@ -551,15 +627,15 @@ class OmrGui(Tkinter.Frame):
         self.text.update_idletasks()
         
     def get_front(self):
-        """open dialog to get front directory"""
+        """open directory selection dialog to set front directory or enpty string"""
         self.front.set(askdirectory())
 
     def get_back(self):
-        """open dialog to get back directory"""
+        """open directory selection dialog to set back directory or enpty string"""
         self.back.set(askdirectory())
 
-def get_arguments():
-    """command line argument parser for optical mark reader"""
+def command_args():
+    """parse command line arguments returning namespace object. adds --help option"""
     parser = argparse.ArgumentParser(description=
         "Extract answer choices from scanned jpg bubble forms. ")
     
@@ -579,11 +655,11 @@ if __name__ == '__main__':
     
     if len(sys.argv) > 1:               # has input args: run as command line app
         multiprocessing.log_to_stderr()     
-        args = get_arguments()              
+        args = command_args()              
         args.pool = multiprocessing.Pool()  
         LOG.setLevel(logging.INFO)          
         
-        read_marks(**vars(args))        # pass input as kwargs to main app
+        Main(**vars(args))              # pass input as kwargs to main app
 
         LOG.setLevel(logging.WARN)            
         args.pool.close()                   
