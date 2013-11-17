@@ -157,16 +157,16 @@ $ pip uninstall omr
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="omr.exam.Form882E_back-class.html" class="summary-name">Form882E_back</a><br />
-      scantron form 882E back side or equivilant
+        <a href="omr.exam.Form882E_front-class.html" class="summary-name">Form882E_front</a><br />
+      scantron form 882E front side or equivilant
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="omr.exam.Form882E_front-class.html" class="summary-name">Form882E_front</a><br />
-      scantron form 882E front side or equivilant
+        <a href="omr.exam.Form882E_back-class.html" class="summary-name">Form882E_back</a><br />
+      scantron form 882E back side or equivilant
     </td>
   </tr>
 <tr>
@@ -221,48 +221,6 @@ $ pip uninstall omr
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="center_on_box"></a><span class="summary-sig-name">center_on_box</span>(<span class="summary-sig-arg">img</span>,
-        <span class="summary-sig-arg">radius</span>,
-        <span class="summary-sig-arg">min_ref</span>,
-        <span class="summary-sig-arg">xmin</span>,
-        <span class="summary-sig-arg">xmax</span>,
-        <span class="summary-sig-arg">ymin</span>,
-        <span class="summary-sig-arg">ymax</span>,
-        <span class="summary-sig-arg">na_val</span>=<span class="summary-sig-default">-9999</span>)</span><br />
-      find the best offset for a black box by trying all within a
-circular search radius</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#center_on_box">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="command_args"></a><span class="summary-sig-name">command_args</span>()</span><br />
-      parse command line arguments returning namespace object. adds --help option</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#command_args">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="omr.exam-module.html#exam_group" class="summary-sig-name">exam_group</a>(<span class="summary-sig-arg">testdir</span>,
         <span class="summary-sig-arg">form</span>,
         <span class="summary-sig-arg">pool</span>=<span class="summary-sig-default">None</span>,
@@ -271,6 +229,44 @@ circular search radius</td>
 choice matrix</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="omr.exam-pysrc.html#exam_group">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="omr.exam-module.html#write_exam_group" class="summary-sig-name">write_exam_group</a>(<span class="summary-sig-arg">images</span>,
+        <span class="summary-sig-arg">choices</span>,
+        <span class="summary-sig-arg">outdir</span>,
+        <span class="summary-sig-arg">csv</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">xls</span>=<span class="summary-sig-default">True</span>)</span><br />
+      write exam group output</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#write_exam_group">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="star_process_exam"></a><span class="summary-sig-name">star_process_exam</span>(<span class="summary-sig-arg">args</span>)</span><br />
+      wrapper for process_exam() that takes list of args</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#star_process_exam">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -302,31 +298,18 @@ choice matrix</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="star_process_exam"></a><span class="summary-sig-name">star_process_exam</span>(<span class="summary-sig-arg">args</span>)</span><br />
-      wrapper for process_exam() that takes list of args</td>
+          <td><span class="summary-sig"><a name="center_on_box"></a><span class="summary-sig-name">center_on_box</span>(<span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">radius</span>,
+        <span class="summary-sig-arg">min_ref</span>,
+        <span class="summary-sig-arg">xmin</span>,
+        <span class="summary-sig-arg">xmax</span>,
+        <span class="summary-sig-arg">ymin</span>,
+        <span class="summary-sig-arg">ymax</span>,
+        <span class="summary-sig-arg">na_val</span>=<span class="summary-sig-default">-9999</span>)</span><br />
+      find the best offset for a black box by trying all within a
+circular search radius</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#star_process_exam">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="omr.exam-module.html#write_exam_group" class="summary-sig-name">write_exam_group</a>(<span class="summary-sig-arg">images</span>,
-        <span class="summary-sig-arg">choices</span>,
-        <span class="summary-sig-arg">outdir</span>,
-        <span class="summary-sig-arg">csv</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">xls</span>=<span class="summary-sig-default">True</span>)</span><br />
-      write exam group output</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#write_exam_group">source&nbsp;code</a></span>
+            <span class="codelink"><a href="omr.exam-pysrc.html#center_on_box">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -381,6 +364,23 @@ score, and file name for each test</td>
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="command_args"></a><span class="summary-sig-name">command_args</span>()</span><br />
+      parse command line arguments returning namespace object. adds --help option</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#command_args">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
@@ -403,15 +403,14 @@ score, and file name for each test</td>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="omr.exam-module.html#FORMS" class="summary-name">FORMS</a> = <code title="{'882E': {'back': &lt;class omr.exam.Form882E_back at 0x03394DC0&gt;,
-          'front': &lt;class omr.exam.Form882E_front at 0x03394D88&gt;}}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">882E</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">back</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_back at 0x0<code class="variable-ellipsis">...</code></code>
+        <a name="LOG"></a><span class="summary-name">LOG</span> = <code title="multiprocessing.get_logger()">multiprocessing.get_logger()</code>
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="LOG"></a><span class="summary-name">LOG</span> = <code title="&lt;logging.Logger object at 0x031E0370&gt;">&lt;logging.Logger object at 0x031E0370&gt;</code>
+        <a href="omr.exam-module.html#FORMS" class="summary-name">FORMS</a> = <code title="{'882E': {'front': Form882E_front, 'back': Form882E_back},}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">882E</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">back</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_back at 0x0<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -495,33 +494,6 @@ choice matrix</p>
   </dl>
 </td></tr></table>
 </div>
-<a name="process_exam"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">process_exam</span>(<span class="sig-arg">imfile</span>,
-        <span class="sig-arg">form</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="omr.exam-pysrc.html#process_exam">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Process input test image returning answer choices</p>
-<ul class="rst-simple">
-<li>load image (load, check dpi, trim margins, check size)</li>
-<li>fit image reference boxes</li>
-<li>extract answer bubble means, choices</li>
-<li>write name image</li>
-<li>write validation image</li>
-</ul>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
 <a name="write_exam_group"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -545,6 +517,33 @@ choice matrix</p>
 <li>Score tests using first image as the key.</li>
 <li>Count choice frequency by question.</li>
 <li>Write csv and xlsx data files</li>
+</ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="process_exam"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">process_exam</span>(<span class="sig-arg">imfile</span>,
+        <span class="sig-arg">form</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="omr.exam-pysrc.html#process_exam">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process input test image returning answer choices</p>
+<ul class="rst-simple">
+<li>load image (load, check dpi, trim margins, check size)</li>
+<li>fit image reference boxes</li>
+<li>extract answer bubble means, choices</li>
+<li>write name image</li>
+<li>write validation image</li>
 </ul>
   <dl class="fields">
   </dl>
@@ -581,8 +580,7 @@ choice matrix</p>
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">882E</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">back</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_back at 0x03394DC0&gt;<code class="variable-op">,</code>
-          <code class="variable-quote">'</code><code class="variable-string">front</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class omr.exam.Form882E_front at 0x03394D88&gt;<code class="variable-group">}</code><code class="variable-group">}</code>
+{'882E': {'front': Form882E_front, 'back': Form882E_back},}
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -621,7 +619,7 @@ choice matrix</p>
   <tr>
     <td align="left" class="footer">
     <a href="epydoc-log.html">Generated by Epydoc
-    3.0.1 on Sun Nov 17 09:25:58 2013</a>
+    3.0.1 on Sun Nov 17 11:14:44 2013</a>
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

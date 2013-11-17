@@ -86,6 +86,7 @@ import os
 from os.path import abspath, basename, dirname, join
 import re
 import shutil
+import string
 import subprocess
 import sys
 import Tkinter
@@ -172,10 +173,12 @@ def write_exam_group(images, choices, outdir, csv=False, xls=True):
     if xls:
         name_files = glob.glob(join(outdir, 'names', "*"))
         wb = openpyxl.Workbook()
-        wb = write_xls_images(wb, name_files, total_score)
-        wb = write_xls_array(wb, counts, 'question info', counts_header)
-        wb = write_xls_array(wb, scoring.astype('i'), 'scoring')
-        wb = write_xls_array(wb, choices, 'choices')    
+        wb = write_xls_images(wb, name_files, total_score, 'summary', header=['Info', 'Score', 'File'], 
+                              height=23, width=[47, 5, 20], scale=[0.65, 0.65])
+                              
+        wb = write_xls_array(wb, counts, 'question info', counts_header, width=6)
+        wb = write_xls_array(wb, scoring.astype('i'), 'scoring', width=3)
+        wb = write_xls_array(wb, choices, 'choices', width=3)    
         wb.save(join(outdir, 'results.xlsx'))
     
     
@@ -339,8 +342,12 @@ class Form:
         coordinates matrix"""
         self.offset = num.array(self.offset) + num.array([r, c])
         self.pos = [self.pos[0] + r, self.pos[1] + c]
-        self.score = num.array(self.score) + num.array([r, r, c, c])
-        self.info = num.array(self.info) + num.array([r, r, c, c])
+
+        if self.info:
+            self.info = num.array(self.info) + num.array([r, r, c, c])
+    
+        if self.score:
+            self.score = num.array(self.score) + num.array([r, r, c, c])
         
         self.calc_coords()
     
@@ -502,51 +509,67 @@ def center_on_box(img, radius, min_ref, xmin, xmax, ymin, ymax, na_val=-9999):
     else:
         return num.array([na_val, na_val]) 
 
-def write_xls_array(workbook, inarray, title=None, header=None, row=0, col=0):
+def write_xls_array(workbook, inarray, title=None, header=None, row=0, col=0, width=None, height=None):
     """create a new sheet in xlsx workbook, write header and array. """
     ws = workbook.create_sheet()
+    
     if title:
         ws.title = title    
     
     if header:
-        [setattr(ws.cell(row=row,column=col+j), 'value', h) for j, h in enumerate(header)]
+        [setattr(ws.cell(row=row, column=col+j), 'value', h) for j, h in enumerate(header)]
         row += 1
             
     for i,j in itertools.product(*map(range, inarray.shape)):
         setattr(ws.cell(row=row+i, column=col+j), 'value', inarray[i, j])
     
-    return workbook
+    if width:
+        if not hasattr(width, '__iter__'):
+            width = itertools.repeat(width)
     
-def write_xls_images(wb, name_images, scores, header={0:'Info', 1:'Score', 2:'File'}, 
-    widths = {'A':47, 'B':5, 'C':20}, height=23, title='summary', scale=[0.65, 0.65]):
+        for w, a in zip(width, sorted(ws.column_dimensions.keys())):
+            setattr(ws.column_dimensions[a], 'width', w)
+    
+    if height:
+        for k in ws.row_dimensions.keys():
+            setattr(ws.row_dimensions[k], 'height', height)
+    
+    return workbook
+
+def write_xls_images(wb, name_images, scores, title=None, header=None, 
+    width=None, height=None, scale=[1, 1]):
     """write xlsx file containing a table of extracted info box images,
     score, and file name for each test"""
     ws = wb.get_active_sheet()
-    ws.title = title
+    if title:
+        ws.title = title
     
-    #write header
-    [setattr(ws.cell(row=0,column=k), 'value', v) for k,v in header.items()]
-    
-    # write data values
+    if header:
+        [setattr(ws.cell(row=0, column=j), 'value', h) for j, h in enumerate(header)]
+        
     for row, (score, name_file) in enumerate(zip(scores, name_images)):
         ws.cell(row=row+1, column=1).value = score
         ws.cell(row=row+1, column=2).value = basename(name_file)
     
-    #set row heights and col widths 
-    [setattr(ws.column_dimensions[k], 'width', v) for k, v in widths.items()]
-    [setattr(ws.row_dimensions[k], 'height', height) for k in ws.row_dimensions.keys()]
+    if width:
+        for w, a in zip(width, sorted(ws.column_dimensions.keys())):
+            setattr(ws.column_dimensions[a], 'width', w)
     
-    if not name_images:
-        ws.cell(row=1, column=0).value = 'ERROR: images could not be loaded'
-        
-    try: #insert each image
-        size = openpyxl.drawing.Image(name_images[0]).image.size * num.array(scale)
-        for r, im in enumerate(name_images):
-            img = openpyxl.drawing.Image(im, size=size)
-            img.anchor(ws.cell(row=r+1, column=0))
-            ws.add_image(img)
-    except:
-        ws.cell(row=1, column=0).value = 'ERROR: images could not be loaded'
+    if height:
+        for k in ws.row_dimensions.keys():
+            setattr(ws.row_dimensions[k], 'height', height)
+    
+    if name_images:
+        try: 
+            size = openpyxl.drawing.Image(name_images[0]).image.size * num.array(scale)
+            for r, im in enumerate(name_images):
+                img = openpyxl.drawing.Image(im, size=size)
+                img.anchor(ws.cell(row=r+1, column=0))
+                ws.add_image(img)
+        except:
+            setattr(ws.cell(row=1, column=0), 'value', 'ERROR: Info images could not be loaded')
+    else:
+        setattr(ws.cell(row=1, column=0), 'value', 'ERROR: Info images not found')
     
     return wb
 
