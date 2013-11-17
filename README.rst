@@ -94,6 +94,8 @@ Troubleshooting
     * I was able to use ``$ easy_install Pillow`` when pip failed to install Pillow 2.2.1
     
 
+`api docs <https://raw.github.com/GregoryCMiller/omr/master/doc/index.html>`_
+
 Author
 ------
 
