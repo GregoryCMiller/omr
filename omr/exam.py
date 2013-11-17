@@ -190,10 +190,10 @@ def process_exam(imfile, form):
     """Process input test image returning answer choices
     
     - load image (load, check dpi, trim margins, check size)      
-    - fit image reference boxes
-    - extract answer bubble means, choices
-    - write name image 
-    - write validation image 
+    - set offset using fitted image reference boxes (if defined)
+    - extract answer bubble means, select and validate answer choices
+    - write name image (if defined)
+    - write validation image containing overlays of reference fits and bubble means
     
     """
     # load image (load, check dpi, trim margins, check size)      
@@ -267,14 +267,14 @@ class Form:
     Region rectangles
     -----------------
 
-    rectangels are specified as [height min, height max, width min, width max]
+    rectangels are specified as [min height, max height, min width, max width] in pixels
     
     ================  ==========================================================
     Parameter         Description
     ================  ==========================================================
-    refzone           list of black reference box rectangles (or empty list). boxes go 
+    refzone           list of black reference box rectangles (or None).
     info              name info rectangle (or None)
-    score             machine printed score rectangle (or None)    
+    score             machine printed score rectangle (or None)
     ================  ==========================================================
     
     Image properties 
@@ -339,7 +339,7 @@ class Form:
     
     def set_offset(self, r=0, c=0):
         """update positional parameters with offset, recalculate
-        coordinates matrix"""
+        extracted rectangles and coordinates matrix"""
         self.offset = num.array(self.offset) + num.array([r, c])
         self.pos = [self.pos[0] + r, self.pos[1] + c]
 
@@ -580,7 +580,7 @@ class OmrGui(Tkinter.Frame):
         """initialize frame, create output variables and widgets, verify
         command and get help text"""
         Tkinter.Frame.__init__(self, master, padx=5, pady=5)
-        master.wm_title("Bubble Vision:  Optical Mark Reader")
+        master.wm_title("Bubble Vision:  Optical Mark Reader ")
         self.pack()
         
         self.front = Tkinter.StringVar(self)
