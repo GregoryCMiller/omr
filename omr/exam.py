@@ -302,13 +302,9 @@ class Form:
     bub            = [0, 0]        
     space          = [0, 0]
     
-    info           = None # [0, 0, 0, 0]
-    score          = None # [0, 0, 0, 0]   
+    info           = None 
+    score          = None 
     refzone        = None 
-                     # [[0, 0, 0, 0],
-                      #[0, 0, 0, 0], 
-                      #[0, 0, 0, 0],               
-                      #[0, 0, 0, 0]]
     
     expected_dpi   = [0, 0]
     expected_size  = [0, 0] 
@@ -580,7 +576,7 @@ class OmrGui(Tkinter.Frame):
         """initialize frame, create output variables and widgets, verify
         command and get help text"""
         Tkinter.Frame.__init__(self, master, padx=5, pady=5)
-        master.wm_title("Bubble Vision:  Optical Mark Reader ")
+        master.wm_title("Bubble Vision:  Optical Mark Reader")
         self.pack()
         
         self.front = Tkinter.StringVar(self)
