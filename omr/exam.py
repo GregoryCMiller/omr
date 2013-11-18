@@ -418,13 +418,16 @@ class Form:
             img[x-1:x, y-r:y+r], img[x-r:x+r, y-1:y] = val, val
             return img
         
+        if len(self.refzone) != 4:
+            return img
+                        
         centers = [(self.ref_x - off, self.ref_y - off), 
                    (self.ref_x - off, self.ref_y + off), 
                    (self.ref_x + off, self.ref_y - off), 
                    (self.ref_x + off, self.ref_y + off)]
                            
         img = plus(img, self.ref_x, self.ref_y, val=150, r=15) # final mean offset
-        img = plus(img, self.ref_x + mean[0], self.ref_y + mean[1], val=0)        
+        img = plus(img, self.ref_x + mean[0], self.ref_y + mean[1], val=0)
         for [x0,x1,y0,y1], [x_off, y_off], (cx, cy) in zip(self.refzone, fit, centers):
             img = plus(img, cx,  cy, val=120, r=15)        # panel fitted
             img = plus(img, cx + x_off, cy + y_off, val=0) # panel reference            
@@ -646,11 +649,11 @@ class OmrGui(Tkinter.Frame):
         self.text.update_idletasks()
         
     def get_front(self):
-        """open directory selection dialog to set front directory or enpty string"""
+        """open directory selection dialog to set front directory or empty string"""
         self.front.set(askdirectory())
 
     def get_back(self):
-        """open directory selection dialog to set back directory or enpty string"""
+        """open directory selection dialog to set back directory or empty string"""
         self.back.set(askdirectory())
 
 def command_args():
