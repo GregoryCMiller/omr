@@ -2,6 +2,7 @@
 *.r
 *.R
 
+doc/
 __pycache__/
 *.py[cod]
 
