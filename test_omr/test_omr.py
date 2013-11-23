@@ -1,4 +1,4 @@
-#!/sr/bin/python
+#!/usr/bin/python
 #Copyright (C) 2013 Greg Miller <gmill002@gmail.com>
 """optical mark reader test suite
 
@@ -6,14 +6,17 @@ run via nosetests called from package root.
 
 """
 import os
-from os.path import dirname, join, exists 
+from os.path import dirname, join, exists
 import random
 import shutil
 import unittest
 
 import numpy as num
-import omr
 
+from omr.exam_group import process_exam_group, write_exam_group
+from omr.exam import process_exam, Form
+from omr.forms import FORMS
+ 
 PACKAGE_ROOT = dirname(dirname(__file__))    # package root
 TEST_DATA = join(PACKAGE_ROOT, 'test_data')  # testing data folder
 TEST_TEMP = join(PACKAGE_ROOT, 'test_tmp')   # temporary test output folder
@@ -29,7 +32,8 @@ class temp_data(unittest.TestCase):
         self.names = join(self.outdir, 'names')         # 
         self.validate = join(self.outdir, 'validation') #
         self.imfile = join(self.path, 'Image (0).jpg')  # single image
-        self.form = omr.exam.FORMS['882E']['front']     # form
+        self.form = '882E'
+        self.side = 'front'     # form
         
         shutil.copytree(TEST_DATA, self.path)           # copy test data tp temp dir
 
@@ -40,7 +44,7 @@ class test_exam_group(temp_data):
         """setup exam group test fixture"""
         super(test_exam_group, self).setUpClass()
         
-        self.images, self.choices = omr.exam.exam_group(self.path, self.form)
+        self.images, self.choices = process_exam_group(self.path, self.form, self.side)
         
     def test_outpath_exists(self):
         """exam group: output directories created"""
@@ -65,7 +69,7 @@ class test_write_exam_group(test_exam_group):
         """setup write exam group test fixture"""
         super(test_write_exam_group, self).setUpClass()
         
-        omr.exam.write_exam_group(self.images, self.choices, self.outdir)
+        write_exam_group(self.images, self.choices, self.outdir)
     
     def test_output_files(self):
         """exam group: output files exist"""
@@ -80,7 +84,7 @@ class test_single_exam(temp_data):
         os.makedirs(self.validate)
         os.makedirs(self.names)
 
-        self.choices = omr.exam.process_exam(self.imfile, self.form())
+        self.choices = process_exam(self.imfile, self.form, self.side)
 
     def test_outpath_exists(self):
         """single exam: mock output directories created"""
@@ -97,7 +101,8 @@ class test_form(unittest.TestCase):
     """form tests"""
     def setUp(self):
         """setup form test fixture"""
-        self.form = omr.exam.FORMS['882E']['front']()
+        form_cfg = FORMS['882E']['front']
+        self.form = Form(form_cfg)
 
     def test_coords(self):
         """form: all coordinates are integers"""

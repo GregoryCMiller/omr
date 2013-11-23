@@ -1,8 +1,8 @@
 [epydoc]
 name: Bubble Vision
-modules : omr.exam
+modules : omr
 output: html
 target: doc
 include-log : yes
 docformat: restructuredtext
-top: omr.exam
+top: omr
