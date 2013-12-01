@@ -1,67 +1,32 @@
 #Copyright (C) 2013 Greg Miller <gmill002@gmail.com>
 """single exam processing"""
-import itertools
-import logging
-import multiprocessing 
-import os
-from os.path import abspath, basename, dirname, join
-from pathlib import Path
+from itertools import product
+from multiprocessing import get_logger
+
 import numpy as num
 from PIL import Image
 
-from omr.forms import FORMS
+LOG = get_logger()
 
-LOG = multiprocessing.get_logger()
+def process_exam(imfile, formcfg):
+    """Process input test image returning answer choices"""
 
-def star_process_exam(args):
-    """wrapper for process_exam() that takes list of args"""
-    return process_exam(*args)
+    form = Form(**formcfg)
     
-def process_exam(imfile, formstr, side):
-    """Process input test image returning answer choices
+    img = form.import_image(imfile)    
     
-    - initialize and configure the form
-    - load image (load, check dpi, trim margins, check size)      
-    - set offset using fitted image reference boxes (if defined)
-    - extract answer bubble means, select and validate answer choices
-    - write name image (if defined)
-    - write validation image containing overlays of reference fits and bubble means
+    img = form.fit_reference(img)    
     
-    """
-    #initialize form with config parameters
-    form = Form(config = FORMS[formstr][side])
+    img, choices = form.get_choices(img)    
     
-    # load image (load, check dpi, trim margins, check size)
-    img = form.load_image(str(imfile))
-    img = form.trim_margins(img)     
-    form.check_size(img)
-    
-    # fit image reference boxes
-    if form.refzone:
-        meanfit, fit = form.fit_reference(img)    
-        img = form.overlay_ref_fit(img, meanfit, fit)    
-        form.set_offset(*meanfit)
-    
-    # extract answer bubble means, choices
-    bubble_means = form.get_bubble_means(img)
-    choice = form.choose_answers(bubble_means)
-    img = form.overlay_bubble_means(img, bubble_means)
-    
-    # write name image
-    #name_file = Path(Path(imfile).parent, 'OMR', 'names', Path(imfile).name)
-    name_file = join(dirname(imfile), 'OMR', 'names', basename(imfile)[:-3] + 'png')
-    form.write_info_image(img, name_file)
-    
-    # write validation image 
-    val_file = join(dirname(imfile), 'OMR', 'validation', basename(imfile))        
-    form.write_validation(img, val_file)
-    
-    # write status to console 
-    LOG.setLevel(logging.INFO)
-    LOG.info(basename(imfile))
-    LOG.setLevel(logging.WARN)
-    
-    return choice
+    form.write_validation(img, imfile)
+
+    LOG.setLevel(20)
+    LOG.info(imfile.name)
+    LOG.setLevel(30)
+        
+    return choices
+
 
 class Form:
     """Represents a generic exam form. Specify answer grid size properties, reference and info rectangles 
@@ -144,19 +109,47 @@ class Form:
     expected_dpi   = [0, 0]
     expected_size  = [0, 0] 
     size_tolerance = [0, 0]
-    refrc   = 0, 0 
+    refrc          = 0, 0 
     contrast       = 0.0 * 255 
     trim_std       = 0         
     radius         = 0         
     min_ref        = 0.0 * 255 
     signal         = 0.0       
     
-    def __init__(self, config={}):
+    def __init__(self, **kwargs):
         """initialize form, calculate default coordinates.  """
-        [setattr(self, k, v) for k, v in config.items()]
-        self.calc_coords()
+        self.__dict__.update(kwargs)
+        self._calc_coords()
+        
+    def import_image(self, imfile):
+        """load image, check dpi, trim margins, check size fit image reference boxes"""
+        img = self._load_image(imfile)        
+        img = self._trim_margins(img)
+        self._check_size(img)
+        return img
+    
+    def fit_reference(self, img):
+        """fit the reference boxes and draw fit validation"""
+        if self.refzone:
+            meanfit, fit = self._get_reference_fit(img)    
+            img = self._overlay_ref_fit(img, meanfit, fit)    
+            self._set_offset(*meanfit)
+        
+        return img
+    
+    def get_choices(self, img):
+        """ """ 
+        means = self._get_bubble_means(img)
+        choices = self._choose_answers(means)        
+        img = self._overlay_bubble_means(img, means)
+        return img, choices
+    
+    def write_validation(self, img, imfile):
+        """ """
+        self._save_validation(img, imfile)
+        self._save_info_image(img, imfile)
 
-    def calc_coords(self):
+    def _calc_coords(self):
         """calculate (m, n, 4) sized matrix of answer bubble
         hmin,hmax,wmin,wmax coordinates"""
         i = num.outer(num.arange(self.size[0]), num.ones(self.size[1]))
@@ -169,7 +162,7 @@ class Form:
         
         self.coords = num.dstack((i0,i1,j0,j1)).astype('i')
     
-    def set_offset(self, r=0, c=0):
+    def _set_offset(self, r=0, c=0):
         """update positional parameters with offset, recalculate
         extracted rectangles and coordinates matrix"""
         self.offset = num.array(self.offset) + num.array([r, c])
@@ -181,22 +174,22 @@ class Form:
         if self.score:
             self.score = num.array(self.score) + num.array([r, r, c, c])
         
-        self.calc_coords()
+        self._calc_coords()
     
-    def load_image(self, imfile):
+    def _load_image(self, imfile):
         """open input image, correct dpi, return greyscale array"""
-        im = Image.open(imfile)          # im = open as PIL image 
+        im = Image.open(str(imfile))
         
         dpi_ratio = num.true_divide(self.expected_dpi, num.array(im.info['dpi']))
         newsize = (num.array(im.size) * dpi_ratio).astype('i')
         if not all(newsize == num.array(im.size)):
-            im = im.resize(newsize, Image.BICUBIC) # change dpi
+            im = im.resize(newsize, Image.BICUBIC)
         
         img = num.array(im.convert('L')) # convert to greyscale array 0-255
         
         return img
 
-    def trim_margins(self, img):
+    def _trim_margins(self, img):
         """Recursivly trim blank edges (low stdev) from input array"""
         oldsize = (0, 0)
         while oldsize != img.shape: # while the size is changing
@@ -208,7 +201,7 @@ class Form:
     
         return img
         
-    def check_size(self, img):
+    def _check_size(self, img):
         """Check input image dimensions are within form tolerance. """
         absdiff = num.abs(num.subtract(img.shape, self.expected_size))
         pctdiff = num.true_divide(absdiff, self.expected_size)
@@ -216,7 +209,7 @@ class Form:
             raise StandardError('image size outside form tolerance {} != {}'\
                                     .format(img.shape, self.expected_size))
         
-    def fit_reference(self, img):
+    def _get_reference_fit(self, img):
         """Get the best translation offset by fitting black box
         reference zones"""
         bw_img = 255 * (img >= self.contrast) 
@@ -227,17 +220,17 @@ class Form:
     
         return meanfit, fit                  
 
-    def get_bubble_means(self, img):
+    def _get_bubble_means(self, img):
         """get the mean pixel value in each answer bubble region"""
         bw_img = 255 * (img >= self.contrast)
         means = num.zeros(self.coords.shape[:2])     
-        for (i,j) in itertools.product(*map(range, self.size)):
+        for (i,j) in product(*map(range, self.size)):
             i0, i1, j0, j1 = self.coords[i, j, :]
             means[i, j] = num.mean(bw_img[i0:i1, j0:j1])
 
         return means
     
-    def choose_answers(self, means):     
+    def _choose_answers(self, means):     
         """choose darkest answer choice. assign poor signal choices -1"""
         choice = num.argmin(means, axis=1)
         if self.signal:
@@ -247,7 +240,7 @@ class Form:
             
         return choice
 
-    def overlay_ref_fit(self, img, mean, fit, off=25):
+    def _overlay_ref_fit(self, img, mean, fit, off=25):
         """draw crosses at the corners of the initial and fitted
         reference boxes"""
         def plus(img, x, y, val=0, r=10):
@@ -274,21 +267,20 @@ class Form:
         
         return img
     
-    def overlay_bubble_means(self, img, means):
-        """overlay the bubble region mean values onto the image"""
-        for (i,j) in itertools.product(*map(range, self.size)):
+    def _overlay_bubble_means(self, img, means):
+        """overlay the bubble region mean values onto the validation image"""
+        for (i,j) in product(*map(range, self.size)):
             i0, i1, j0, j1 = self.coords[i, j, :]
             img[i0:i1, j0:j1] = means[i,j]
     
         return img
     
-    def write_validation(self, img, val_file):
-        """write the greyscale image that has been marked with reference
-        fits and bubble means"""
-        Image.fromarray(img).save(val_file)
-
-    def write_info_image(self, img, name_file):
+    def _save_validation(self, img, imfile):
         """extract the forms info box region and stack the score box"""
+        val_file = imfile.parent()['OMR','validation', imfile.name]
+        Image.fromarray(img).save(str(val_file))
+        
+    def _save_info_image(self, img, imfile):
         if self.info not in [[], None]:
             xmin, xmax, ymin, ymax = self.info
             nameimg = num.rot90(img[xmin:xmax, ymin:ymax])
@@ -297,13 +289,23 @@ class Form:
                 xmin, xmax, ymin, ymax = self.score
                 score = num.rot90(img[xmin:xmax, ymin:ymax])
                 nameimg = num.hstack([nameimg[30:75, :], score])
-
-            Image.fromarray(nameimg).save(name_file)
-
+            
+            name_file = imfile.parent()['OMR','names', imfile.name.replace(imfile.ext,'.png')]
+            Image.fromarray(nameimg).save(str(name_file))
 
 def center_on_box(img, radius, min_ref, xmin, xmax, ymin, ymax, na_val=-9999):
-    """find the best offset for a black box by trying all within a
-    circular search radius"""
+    """Find the best offset for a black box by trying all within a
+    circular search radius
+    
+    parameters  description
+    ==========  ========================
+    img         input numpy array image
+    radius      search radius for best offset 
+    min_ref     max mean value for successful match
+    xmin...     initial rectangle region 
+    na_val      returned offset value if fitting failed   
+    
+    """
     x, y = num.meshgrid(num.arange(-radius, radius), num.arange(-radius, radius))
     coords = [(i, j) for i, j in zip(x.flatten(), y.flatten()) if (i**2 + j**2)**0.5 <= radius]    
     fit = [num.mean(img[(xmin+i):(xmax+i), (ymin+j):(ymax+j)]) for i, j in coords]

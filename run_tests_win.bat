@@ -1,9 +1,8 @@
+START /MIN epydoc.py --config DocConfig.py
 
-python bin\omrcmd.py --help
+python omr\omrcmd.py --help
 
 nosetests -v
-
-epydoc.py --config DocConfig.py > doc\build_result.txt
 
 python omr\omrcmd.py
 

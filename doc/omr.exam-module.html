@@ -112,26 +112,8 @@ single exam processing
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="star_process_exam"></a><span class="summary-sig-name">star_process_exam</span>(<span class="summary-sig-arg">args</span>)</span><br />
-      wrapper for process_exam() that takes list of args</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#star_process_exam">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="omr.exam-module.html#process_exam" class="summary-sig-name">process_exam</a>(<span class="summary-sig-arg">imfile</span>,
-        <span class="summary-sig-arg">formstr</span>,
-        <span class="summary-sig-arg">side</span>)</span><br />
+          <td><span class="summary-sig"><a name="process_exam"></a><span class="summary-sig-name">process_exam</span>(<span class="summary-sig-arg">imfile</span>,
+        <span class="summary-sig-arg">formcfg</span>)</span><br />
       Process input test image returning answer choices</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="omr.exam-pysrc.html#process_exam">source&nbsp;code</a></span>
@@ -148,7 +130,7 @@ single exam processing
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="center_on_box"></a><span class="summary-sig-name">center_on_box</span>(<span class="summary-sig-arg">img</span>,
+          <td><span class="summary-sig"><a href="omr.exam-module.html#center_on_box" class="summary-sig-name">center_on_box</a>(<span class="summary-sig-arg">img</span>,
         <span class="summary-sig-arg">radius</span>,
         <span class="summary-sig-arg">min_ref</span>,
         <span class="summary-sig-arg">xmin</span>,
@@ -156,7 +138,7 @@ single exam processing
         <span class="summary-sig-arg">ymin</span>,
         <span class="summary-sig-arg">ymax</span>,
         <span class="summary-sig-arg">na_val</span>=<span class="summary-sig-default">-9999</span>)</span><br />
-      find the best offset for a black box by trying all within a
+      Find the best offset for a black box by trying all within a
 circular search radius</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="omr.exam-pysrc.html#center_on_box">source&nbsp;code</a></span>
@@ -189,7 +171,7 @@ circular search radius</td>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="LOG"></a><span class="summary-name">LOG</span> = <code title="multiprocessing.get_logger()">multiprocessing.get_logger()</code>
+        <a name="LOG"></a><span class="summary-name">LOG</span> = <code title="get_logger()">get_logger()</code>
     </td>
   </tr>
 <tr>
@@ -218,31 +200,36 @@ circular search radius</td>
   </td>
 </tr>
 </table>
-<a name="process_exam"></a>
+<a name="center_on_box"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">process_exam</span>(<span class="sig-arg">imfile</span>,
-        <span class="sig-arg">formstr</span>,
-        <span class="sig-arg">side</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">center_on_box</span>(<span class="sig-arg">img</span>,
+        <span class="sig-arg">radius</span>,
+        <span class="sig-arg">min_ref</span>,
+        <span class="sig-arg">xmin</span>,
+        <span class="sig-arg">xmax</span>,
+        <span class="sig-arg">ymin</span>,
+        <span class="sig-arg">ymax</span>,
+        <span class="sig-arg">na_val</span>=<span class="sig-default">-9999</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="omr.exam-pysrc.html#process_exam">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="omr.exam-pysrc.html#center_on_box">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Process input test image returning answer choices</p>
-<ul class="rst-simple">
-<li>initialize and configure the form</li>
-<li>load image (load, check dpi, trim margins, check size)</li>
-<li>set offset using fitted image reference boxes (if defined)</li>
-<li>extract answer bubble means, select and validate answer choices</li>
-<li>write name image (if defined)</li>
-<li>write validation image containing overlays of reference fits and bubble means</li>
-</ul>
+  <p>Find the best offset for a black box by trying all within a
+circular search radius</p>
+<p>parameters  description
+==========  ========================
+img         input numpy array image
+radius      search radius for best offset
+min_ref     max mean value for successful match
+xmin...     initial rectangle region
+na_val      returned offset value if fitting failed</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -280,7 +267,7 @@ circular search radius</td>
   <tr>
     <td align="left" class="footer">
     <a href="epydoc-log.html">Generated by Epydoc
-    3.0.1 on Sat Nov 23 12:12:23 2013</a>
+    3.0.1 on Sun Dec 01 13:13:18 2013</a>
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

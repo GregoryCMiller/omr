@@ -5,62 +5,86 @@
 run via nosetests called from package root.
 
 """
-import os
-from os.path import dirname, join, exists
-import random
-import shutil
-import unittest
-
-import numpy as num
+from pathlib import Path
+from random import randrange
+from shutil import copytree
+from unittest import TestCase
 
 from omr.exam_group import process_exam_group, write_exam_group
 from omr.exam import process_exam, Form
 from omr.forms import FORMS
  
-PACKAGE_ROOT = dirname(dirname(__file__))    # package root
-TEST_DATA = join(PACKAGE_ROOT, 'test_data')  # testing data folder
-TEST_TEMP = join(PACKAGE_ROOT, 'test_tmp')   # temporary test output folder
+PACKAGE_ROOT = Path(str(__file__)).parent(2)    # package root
+TEST_DATA = PACKAGE_ROOT['test_data']  # testing data folder
+TEST_TEMP = PACKAGE_ROOT['test_tmp']   # temporary test output folder
 
-class temp_data(unittest.TestCase):
+class OmrTestCase(TestCase):
     """create temp dir with required source image files"""
     @classmethod  
     def setUpClass(self):        
         """setup test fixture attributes (inherited by all tests)"""
-        rand_hex_str = '%030x' % random.randrange(16**30)
-        self.path = join(TEST_TEMP, rand_hex_str)       # temp test dir
-        self.outdir = join(self.path, 'OMR')            # output dir
-        self.names = join(self.outdir, 'names')         # 
-        self.validate = join(self.outdir, 'validation') #
-        self.imfile = join(self.path, 'Image (0).jpg')  # single image
+        rand_hex_str = '{}030x'.format(randrange(16**30))
+        self.path = TEST_TEMP[rand_hex_str]       # temp test dir
+        self.outdir = self.path['OMR']            # output dir
+        self.imfile = self.path['Image (0).jpg']  # single image
         self.form = '882E'
-        self.side = 'front'     # form
+        self.side = 'front'
+        self.formcfg = FORMS['882E']['front']
         
-        shutil.copytree(TEST_DATA, self.path)           # copy test data tp temp dir
+        copytree(str(TEST_DATA), str(self.path))           # copy test data tp temp dir
 
-class test_exam_group(temp_data):
+class mock_exam_group(OmrTestCase):
+    """setup exam group conditions to test single exam processing"""
+    @classmethod  
+    def setUpClass(self):
+        """setup exam group conditions to test single exam processing"""
+        super(mock_exam_group, self).setUpClass()
+        [x.mkdir() for x in [self.outdir, self.outdir['validation'], self.outdir['names']]]
+        
+    def test_outpath_exists(self):
+        """single exam: mock output directories created"""
+        self.assertTrue(self.outdir.exists())
+        self.assertTrue(self.outdir['names'].exists())    
+        self.assertTrue(self.outdir['validation'].exists())
+
+
+class test_single_exam(mock_exam_group):
+    """single exam tests"""
+    @classmethod  
+    def setUpClass(self):
+        """setup single exam test fixture"""
+        super(test_single_exam, self).setUpClass()
+        
+        self.choices = process_exam(self.imfile, self.formcfg)
+
+    def test_choice(self):
+        """single exam: choices exist"""
+        self.assertTrue(len(self.choices) > 0)
+        
+class test_exam_group(OmrTestCase):
     """exam group tests"""
     @classmethod  
     def setUpClass(self):
         """setup exam group test fixture"""
         super(test_exam_group, self).setUpClass()
         
-        self.images, self.choices = process_exam_group(self.path, self.form, self.side)
+        self.images, self.choices, self.outdir = process_exam_group(self.path, self.form, self.side)
         
     def test_outpath_exists(self):
         """exam group: output directories created"""
-        self.assertTrue(exists(self.outdir))
+        self.assertTrue(self.outdir.exists())
+        self.assertTrue(self.outdir['validation'].exists())
+        self.assertTrue(self.outdir['names'].exists())
                 
     def test_validation_images_exist(self):
         """exam group: all validation images written"""
-        self.assertTrue(exists(self.names))
-        files = os.listdir(join(self.outdir, 'validation'))
-        self.assertEqual(len(files), len(self.images))
+        val_images = list(self.outdir['validation'].glob('*'))
+        self.assertEqual(len(self.images), len(val_images))
     
     def test_name_images_exist(self):
         """exam group: all name images written"""
-        self.assertTrue(exists(self.validate))
-        files = os.listdir(join(self.outdir, 'names'))
-        self.assertEqual(len(files), len(self.images))
+        name_images = list(self.outdir['names'].glob('*'))
+        self.assertEqual(len(self.images), len(name_images)) 
 
 class test_write_exam_group(test_exam_group):
     """write exam group tests"""
@@ -73,48 +97,4 @@ class test_write_exam_group(test_exam_group):
     
     def test_output_files(self):
         """exam group: output files exist"""
-        self.assertTrue(exists(join(self.outdir, 'results.xlsx')))
-    
-class test_single_exam(temp_data):
-    """single exam tests"""
-    @classmethod  
-    def setUpClass(self):
-        """setup single exam test fixture"""
-        super(test_single_exam, self).setUpClass()
-        os.makedirs(self.validate)
-        os.makedirs(self.names)
-
-        self.choices = process_exam(self.imfile, self.form, self.side)
-
-    def test_outpath_exists(self):
-        """single exam: mock output directories created"""
-        self.assertTrue(exists(self.outdir))
-        self.assertTrue(exists(join(self.outdir, 'names')))    
-        self.assertTrue(exists(join(self.outdir, 'validation')))
-    
-    def test_choice(self):
-        """single exam: choices exist"""
-        self.assertTrue(len(self.choices) > 0)
-        
-        
-class test_form(unittest.TestCase):
-    """form tests"""
-    def setUp(self):
-        """setup form test fixture"""
-        form_cfg = FORMS['882E']['front']
-        self.form = Form(form_cfg)
-
-    def test_coords(self):
-        """form: all coordinates are integers"""
-        for d in self.form.coords.flatten():
-            self.assertTrue(num.issubdtype(d, int))
-
-    def test_set_offset(self):
-        """form: offsets update"""
-        off = [2, 2]
-        self.form.set_offset(*off)
-        self.assertItemsEqual(self.form.offset, off)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertTrue(self.outdir['results.xlsx'].exists())

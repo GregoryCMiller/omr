@@ -8,14 +8,14 @@ Graphical User Interface
 ------------------------
 ::
     
-    $ exam.py
+    $ omrcmd.py
 
 
 Command Line
 ------------
 ::
     
-    $ exam.py imagedir [options]
+    $ omrcmd.py [options] imagedir
 
 
 imagedir           
@@ -69,10 +69,10 @@ Install
 
 * Dependencies (installed by pip)
 
-  * `numpy 1.8.0 <http://www.numpy.org>`_ numerical array object
-  * `pillow 2.2.1 <http://python-imaging.github.io/>`_ image module
-  * `openpyxl 1.6.2 <http://openpyxl.readthedocs.org/en/latest/>`_ write xlsx files
-
+  * `numpy 1.8.0 <http://www.numpy.org>`_ multidimensional numerical array object. 
+  * `openpyxl 1.6.2 <http://openpyxl.readthedocs.org/en/latest/>`_ read and write excel xlsx files.  
+  * `pillow 2.2.1 <http://python-imaging.github.io/>`_ image manipulation. 
+  * `yaml 3.10 <https://bitbucket.org/xi/pyyaml>`_ human friendly data serialization.
 
 Example Validation Image
 ------------------------
@@ -85,7 +85,7 @@ Troubleshooting
 
 * Windows 
 
-  * ``$ exam.py --help`` gives ``exam.py: error: too few arguments``
+  * ``$ omrcmd.py --help`` gives ``omrcmd.py: error: too few arguments``
     
     * fix argument passing to "py" file associations from ``python %1`` to ``python %1 %*``
     

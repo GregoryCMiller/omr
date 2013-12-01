@@ -205,7 +205,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">config</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span><br />
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       initialize form, calculate default coordinates.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="omr.exam-pysrc.html#Form.__init__">source&nbsp;code</a></span>
@@ -222,85 +222,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="calc_coords"></a><span class="summary-sig-name">calc_coords</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      calculate (m, n, 4) sized matrix of answer bubble
-hmin,hmax,wmin,wmax coordinates</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.calc_coords">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="set_offset"></a><span class="summary-sig-name">set_offset</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">r</span>=<span class="summary-sig-default">0</span>,
-        <span class="summary-sig-arg">c</span>=<span class="summary-sig-default">0</span>)</span><br />
-      update positional parameters with offset, recalculate
-extracted rectangles and coordinates matrix</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.set_offset">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="load_image"></a><span class="summary-sig-name">load_image</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="import_image"></a><span class="summary-sig-name">import_image</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">imfile</span>)</span><br />
-      open input image, correct dpi, return greyscale array</td>
+      load image, check dpi, trim margins, check size fit image reference boxes</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.load_image">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="trim_margins"></a><span class="summary-sig-name">trim_margins</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">img</span>)</span><br />
-      Recursivly trim blank edges (low stdev) from input array</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.trim_margins">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="check_size"></a><span class="summary-sig-name">check_size</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">img</span>)</span><br />
-      Check input image dimensions are within form tolerance.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.check_size">source&nbsp;code</a></span>
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.import_image">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -316,8 +242,7 @@ extracted rectangles and coordinates matrix</td>
         <tr>
           <td><span class="summary-sig"><a name="fit_reference"></a><span class="summary-sig-name">fit_reference</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">img</span>)</span><br />
-      Get the best translation offset by fitting black box
-reference zones</td>
+      fit the reference boxes and draw fit validation</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="omr.exam-pysrc.html#Form.fit_reference">source&nbsp;code</a></span>
             
@@ -333,70 +258,10 @@ reference zones</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_bubble_means"></a><span class="summary-sig-name">get_bubble_means</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">img</span>)</span><br />
-      get the mean pixel value in each answer bubble region</td>
+          <td><span class="summary-sig"><a name="get_choices"></a><span class="summary-sig-name">get_choices</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.get_bubble_means">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="choose_answers"></a><span class="summary-sig-name">choose_answers</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">means</span>)</span><br />
-      choose darkest answer choice. assign poor signal choices -1</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.choose_answers">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="overlay_ref_fit"></a><span class="summary-sig-name">overlay_ref_fit</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">img</span>,
-        <span class="summary-sig-arg">mean</span>,
-        <span class="summary-sig-arg">fit</span>,
-        <span class="summary-sig-arg">off</span>=<span class="summary-sig-default">25</span>)</span><br />
-      draw crosses at the corners of the initial and fitted
-reference boxes</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.overlay_ref_fit">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="overlay_bubble_means"></a><span class="summary-sig-name">overlay_bubble_means</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">img</span>,
-        <span class="summary-sig-arg">means</span>)</span><br />
-      overlay the bubble region mean values onto the image</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.overlay_bubble_means">source&nbsp;code</a></span>
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form.get_choices">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -412,9 +277,7 @@ reference boxes</td>
         <tr>
           <td><span class="summary-sig"><a name="write_validation"></a><span class="summary-sig-name">write_validation</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">img</span>,
-        <span class="summary-sig-arg">val_file</span>)</span><br />
-      write the greyscale image that has been marked with reference
-fits and bubble means</td>
+        <span class="summary-sig-arg">imfile</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="omr.exam-pysrc.html#Form.write_validation">source&nbsp;code</a></span>
             
@@ -424,18 +287,224 @@ fits and bubble means</td>
       
     </td>
   </tr>
-<tr>
+<tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="write_info_image"></a><span class="summary-sig-name">write_info_image</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="_calc_coords"></a><span class="summary-sig-name">_calc_coords</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      calculate (m, n, 4) sized matrix of answer bubble
+hmin,hmax,wmin,wmax coordinates</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._calc_coords">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_set_offset"></a><span class="summary-sig-name">_set_offset</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">r</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">c</span>=<span class="summary-sig-default">0</span>)</span><br />
+      update positional parameters with offset, recalculate
+extracted rectangles and coordinates matrix</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._set_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_load_image"></a><span class="summary-sig-name">_load_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">imfile</span>)</span><br />
+      open input image, correct dpi, return greyscale array</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._load_image">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_trim_margins"></a><span class="summary-sig-name">_trim_margins</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      Recursivly trim blank edges (low stdev) from input array</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._trim_margins">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_check_size"></a><span class="summary-sig-name">_check_size</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      Check input image dimensions are within form tolerance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._check_size">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_get_reference_fit"></a><span class="summary-sig-name">_get_reference_fit</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      Get the best translation offset by fitting black box
+reference zones</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._get_reference_fit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_get_bubble_means"></a><span class="summary-sig-name">_get_bubble_means</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>)</span><br />
+      get the mean pixel value in each answer bubble region</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._get_bubble_means">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_choose_answers"></a><span class="summary-sig-name">_choose_answers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">means</span>)</span><br />
+      choose darkest answer choice. assign poor signal choices -1</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._choose_answers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_overlay_ref_fit"></a><span class="summary-sig-name">_overlay_ref_fit</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">img</span>,
-        <span class="summary-sig-arg">name_file</span>)</span><br />
+        <span class="summary-sig-arg">mean</span>,
+        <span class="summary-sig-arg">fit</span>,
+        <span class="summary-sig-arg">off</span>=<span class="summary-sig-default">25</span>)</span><br />
+      draw crosses at the corners of the initial and fitted
+reference boxes</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._overlay_ref_fit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_overlay_bubble_means"></a><span class="summary-sig-name">_overlay_bubble_means</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">means</span>)</span><br />
+      overlay the bubble region mean values onto the validation image</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._overlay_bubble_means">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_save_validation"></a><span class="summary-sig-name">_save_validation</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">imfile</span>)</span><br />
       extract the forms info box region and stack the score box</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="omr.exam-pysrc.html#Form.write_info_image">source&nbsp;code</a></span>
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._save_validation">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_save_info_image"></a><span class="summary-sig-name">_save_info_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">img</span>,
+        <span class="summary-sig-arg">imfile</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="omr.exam-pysrc.html#Form._save_info_image">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -613,7 +682,7 @@ fits and bubble means</td>
   <tr>
     <td align="left" class="footer">
     <a href="epydoc-log.html">Generated by Epydoc
-    3.0.1 on Sat Nov 23 12:12:23 2013</a>
+    3.0.1 on Sun Dec 01 13:13:18 2013</a>
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
