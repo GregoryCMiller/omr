@@ -3,6 +3,7 @@
 *.R
 
 doc/
+
 __pycache__/
 *.py[cod]
 
@@ -10,7 +11,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-bin/
+#bin/
 build/
 develop-eggs/
 dist/
