@@ -296,15 +296,16 @@ class Form:
 def center_on_box(img, radius, min_ref, xmin, xmax, ymin, ymax, na_val=-9999):
     """Find the best offset for a black box by trying all within a
     circular search radius
+
     
-    parameters  description
-    ==========  ========================
-    img         input numpy array image
-    radius      search radius for best offset 
-    min_ref     max mean value for successful match
-    xmin...     initial rectangle region 
-    na_val      returned offset value if fitting failed   
-    
+    parameters::
+        
+        img         input numpy array image
+        radius      search radius for best offset 
+        min_ref     max mean value for successful match
+        xmin,xmax,  initial rectangle region 
+        na_val      returned offset value if fitting failed   
+        
     """
     x, y = num.meshgrid(num.arange(-radius, radius), num.arange(-radius, radius))
     coords = [(i, j) for i, j in zip(x.flatten(), y.flatten()) if (i**2 + j**2)**0.5 <= radius]    

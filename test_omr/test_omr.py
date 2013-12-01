@@ -4,6 +4,14 @@
 
 run via nosetests called from package root.
 
+test classes::
+    
+    OmrTestCase            create temp dir with required source image files
+    mock_exam_group        setup exam group conditions for testing single exam
+    test_single_exam       test processing single exam
+    test_exam_group        test exam group
+    test_write_exam_group  test exam group output
+
 """
 from pathlib import Path
 from random import randrange
