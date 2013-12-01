@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = "omr",
-    version = "0.0.4a1",
+    version = "0.0.5",
     author = "Greg Miller",
     author_email = "gmill002@gmail.com",
     description = "Bubble Vision: Optical Mark Reader",
