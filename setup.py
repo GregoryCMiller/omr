@@ -17,7 +17,7 @@ setup(
       "test_omr": "test_omr"
       },
     scripts = ["omr/omrcmd.py", ],     
-    package_data = {'': ['*.yaml'], },    
+    #package_data = {'': ['*.yaml'], },    
     install_requires = [
       "numpy >= 1.8.0",
       "pillow >= 2.2.1",
@@ -33,7 +33,6 @@ setup(
       #'Programming Language :: Python :: 3.3',
       'Topic :: Scientific/Engineering :: Image Recognition',
       'Topic :: Education :: Testing',
-      
-      
       ],
+    platform = 'any',
 )

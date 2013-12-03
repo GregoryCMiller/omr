@@ -4,13 +4,18 @@
 Run app with command line arguments.
 Run GUI if no arguments are provided.
 """
-from argparse import ArgumentParser
-from sys import argv
+import argparse
+import multiprocessing    
+import sys
+import Tkinter
+
+from omr.exam_group import Main
 from omr.forms import FORMS
+from omr.gui import Gui
 
 def parse_args():
     """parse command line arguments."""
-    parser = ArgumentParser(description=
+    parser = argparse.ArgumentParser(description=
         "Extract answer choices from scanned jpg bubble forms.")
     
     parser.add_argument('frontdir', help="Image directory.")
@@ -22,27 +27,29 @@ def parse_args():
                         choices=sorted(FORMS.keys()), help='Form string')
     
     return parser.parse_args()
-    
-if __name__ == '__main__':
-    if len(argv) > 1:
-        from multiprocessing import Pool, log_to_stderr        
-        from omr.exam_group import Main
 
-        log_to_stderr()
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+        
+    if len(sys.argv) > 1:
+        multiprocessing.log_to_stderr()
         args = parse_args()
-        args.pool = Pool()
+        
+        if getattr(sys, 'frozen', False):
+            args.pool = None
+        else:
+            args.pool = multiprocessing.Pool()
         
         Main(**vars(args))
         
-        args.pool.close()
-        args.pool.join()
+        if args.pool:
+            args.pool.close()
+            args.pool.join()
+            
         print 'completed'
     
     else:
-        from Tkinter import Tk
-        from omr.gui import Gui
-    
-        root = Tk()
+        root = Tkinter.Tk()
         app = Gui(root)
         root.update_idletasks()
         root.mainloop()

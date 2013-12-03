@@ -3,12 +3,17 @@
 from collections import OrderedDict
 from pkg_resources import resource_filename
 from subprocess import Popen, PIPE, STDOUT
-from sys import platform
+import sys
 import Tkinter
 from tkFileDialog import askdirectory
 
 from omr.forms import FORMS
 
+CMD = ['python', resource_filename(__name__, 'omrcmd.py')]
+
+if getattr(sys, 'frozen', False):
+    CMD = [sys.executable]
+    
 class Gui(Tkinter.Frame):
     """GUI to select omr arguments"""
     def __init__(self, master):
@@ -20,11 +25,13 @@ class Gui(Tkinter.Frame):
         
         self.front = Tkinter.StringVar(self)
         self.back = Tkinter.StringVar(self)
-        self.form = Tkinter.StringVar(self, value = sorted(FORMS.keys())[0])
+        self.form = Tkinter.StringVar(self)
+        if FORMS:
+            self.form.set(sorted(FORMS.keys())[0])
         
         self.create_widgets()
         
-        self.cmd = ['python', resource_filename(__name__, 'omrcmd.py')]
+        self.cmd = CMD
         try:
             self.call(['--help'], see="1.0")
         except:
@@ -67,8 +74,8 @@ class Gui(Tkinter.Frame):
         """run the command with input args. Use echo and output to print
         the command and response"""         
         self.msg("$ " + " ".join(self.cmd + args) + '\n')
-        p = Popen(self.cmd + args, stdout=PIPE, stderr=STDOUT, shell='win' in platform)        
-        [self.msg(l, see) for l in iter(p.stdout.readline,'')]
+        p = Popen(self.cmd + args, stdout=PIPE, stderr=STDOUT, shell='win' in sys.platform)        
+        [self.msg(l, see) for l in iter(p.stdout.readline,'') if 'WARNING' not in l]
         
     def msg(self, text, see=Tkinter.END):
         """insert string into gui text box"""
