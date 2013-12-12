@@ -74,6 +74,10 @@ Install
   * `pillow 2.2.1 <http://python-imaging.github.io/>`_ image manipulation. 
   * `yaml 3.10 <https://bitbucket.org/xi/pyyaml>`_ human friendly data serialization.
 
+* Prebuilt binaries
+
+  * Stand alone Windows exe (no parallel processing) 
+  
 Example Validation Image
 ------------------------
 
