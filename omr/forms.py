@@ -1,9 +1,28 @@
-from collections import OrderedDict
-from os.path import exists
-from pkg_resources import resource_filename
+"""forms.py: import built in and user form specifications.
+
+
+Forms are loaded (and overwritten) in the following order::
+  
+- Built in 882E form
+- "forms.yaml" in the package directory if not executable 
+- "*.yaml" in the current directory (if executable)
+
+"""
+import sys
 import yaml
 
-FILES = ['forms.yaml']
+from collections import OrderedDict
+from os.path import exists
+from pathlib import Path
+from pkg_resources import resource_filename
+
+def read_form(path):
+    try:
+        with open(path, 'r') as f:
+            return yaml.safe_load(f)
+    except yaml.YAMLError, e:
+        print e
+
 DEFAULT = """
 882E:
     front:
@@ -51,25 +70,9 @@ DEFAULT = """
         signal: 1.1
         
 """
-
-def read_form(path):
-    data = {}
-    try:
-        with open(path, 'r') as f:
-            d = yaml.load(f)
-            if d:
-                data = d
-        
-    except yaml.scanner.ScannerError as e:
-        print "{} : {}".format(path, "yaml.scanner.ScannerError")
+FORMS = OrderedDict(yaml.safe_load(DEFAULT))
+FILES = [resource_filename(__name__, 'forms.yaml'), ]
+if getattr(sys,'frozen', False):
+    FILES += map(str, Path(sys.executable).parent().glob('*.yaml'))
     
-    except:
-        print 'unexpected error'
-    
-    return data
-
-
-FORMS = OrderedDict(yaml.load(DEFAULT))
-files = filter(exists, [resource_filename(__name__, f) for f in FILES])
-[FORMS.update(read_form(f)) for f in files]
-
+map(FORMS.update, filter(None, map(read_form, filter(exists, FILES))))

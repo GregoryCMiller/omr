@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = "omr",
-    version = "0.0.6",
+    version = "0.0.7",
     author = "Greg Miller",
     author_email = "gmill002@gmail.com",
     description = "Bubble Vision: Optical Mark Reader",
@@ -17,14 +17,13 @@ setup(
       "test_omr": "test_omr"
       },
     scripts = ["omr/omrcmd.py", ],     
-    #package_data = {'': ['*.yaml'], },    
+    package_data = {'': ['forms.yaml'], },    
     install_requires = [
       "numpy >= 1.8.0",
       "pillow >= 2.2.1",
       "openpyxl >= 1.6.2",
       "PyYAML >= 3.10",],
     classifiers=[
-      'Development Status :: 4 - Beta',
       'Operating System :: OS Independent',
       'Programming Language :: Python',
       'Programming Language :: Python :: 2',

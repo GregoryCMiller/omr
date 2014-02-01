@@ -7,10 +7,9 @@ import sys
 import Tkinter
 from tkFileDialog import askdirectory
 
-from omr.forms import FORMS
+from omr import FORMS
 
 CMD = ['python', resource_filename(__name__, 'omrcmd.py')]
-
 if getattr(sys, 'frozen', False):
     CMD = [sys.executable]
     
@@ -38,6 +37,7 @@ class Gui(Tkinter.Frame):
             self.cmd = []
 
         self.prechecks = OrderedDict({
+            #evaluated code   : "message \n", 
             'self.cmd'        : 'No command line application.\n',
             'self.front.get()': 'Choose front directory.\n',
             'self.form.get()' : 'Choose form.\n',
@@ -51,7 +51,7 @@ class Gui(Tkinter.Frame):
         
         Tkinter.Button(self, textvar=self.front, command=self.get_front, width=30).grid(row=1, column=0)
         Tkinter.Button(self, textvar=self.back, command=self.get_back, width=30).grid(row=1, column=1)        
-        Tkinter.OptionMenu(self, self.form, *sorted(FORMS.keys())).grid(row=1, column=2)
+        Tkinter.OptionMenu(self, self.form, *FORMS.keys()).grid(row=1, column=2)
         
         self.text = Tkinter.Text(self, height=15, width=80)
         self.text.grid(row=2, columnspan=3, pady=5)
@@ -74,7 +74,7 @@ class Gui(Tkinter.Frame):
         """run the command with input args. Use echo and output to print
         the command and response"""         
         self.msg("$ " + " ".join(self.cmd + args) + '\n')
-        p = Popen(self.cmd + args, stdout=PIPE, stderr=STDOUT, shell='win' in sys.platform)        
+        p = Popen(self.cmd + args, stdout=PIPE, stderr=STDOUT, shell='win' in sys.platform)
         [self.msg(l, see) for l in iter(p.stdout.readline,'') if 'WARNING' not in l]
         
     def msg(self, text, see=Tkinter.END):
@@ -94,4 +94,4 @@ class Gui(Tkinter.Frame):
     def get_back(self):
         """open directory selection dialog to set back directory"""
         self.back.set(askdirectory())
-        
+    

@@ -1,16 +1,15 @@
 #Copyright (C) 2013 Greg Miller <gmill002@gmail.com>
 """process a group of test images contained in a directory"""
+from functools import partial
 from itertools import repeat, product
 from re import findall
 from shutil import rmtree
-from functools import partial
 
 from numpy import array, histogram, hstack, savetxt, sum, vstack, zeros
-import openpyxl, openpyxl.drawing
+import openpyxl, openpyxl.drawing 
 from pathlib import Path
 
-from omr.exam import process_exam
-from omr.forms import FORMS
+from omr import FORMS, process_exam
 
 _NUMSORT = lambda x: float(".".join(findall('[0-9]+', x.name)[:2])) 
 """extract the first two numeric blocks of a path as a float"""
@@ -30,74 +29,100 @@ def process_exam_group(testdir, formstr, side, pool=None):
     """Process all test images in a directory returning image path list and 
     choice matrix. 
     
+    
+    testdir  
+        Input folder containing test images 
+    
+    formstr  
+        String identifying form in FORMS dictionary
+
+    side     
+        Test side (front, back)
+
+    pool     
+        Parallel processing pool 
+
+    
+    Procedure
+    
     - Create output directory in input test image dir.
     - find .jpg images, sort in place by first 2 numeric blocks
     - Run each test (possibly in parallel). 
+        
     
-    Parameters::
-        
-        testdir  input folder containing test images 
-        formstr  string identifying form in FORMS dictionary
-        side     test side (front, back)
-        pool     parallel processing pool 
-        
     """
+    # define output directories 
+    
     wd = Path(testdir)['OMR']
     rmtree(str(wd), True)
     [wd[p].mkdir() for p in ['', 'validation', 'names']]
     
+    # get image paths
     images = sorted(wd.parent().glob('*.jpg'), key=_NUMSORT)
     if not images:
         raise StandardError('at least one image is required')
     
+    #process each image
     func = partial(process_exam, formcfg=FORMS[formstr][side])
     if pool:
         choices = pool.map(func, images)
     else:
         choices = map(func, images)
     
+    #return image list, choices, and output direcory
     return images, vstack(choices), wd
 
 def write_exam_group(images, choices, outdir, csv=False, xls=True):
     """Write exam group output
     
+    
+    images   
+        list of image paths 
+    
+    choices  
+        matrix of choices with tests in rows
+    
+    outdir   
+        output path 
+    
+    csv      
+        option to write csv output tables  
+    
+    xls      
+        option write xls workbook output  
+
+    
     - Score tests using first image as the key.  
     - Count choice frequency by question. 
     - Write csv and xlsx data files 
     
-    Parameters::
-        
-        images   list of image paths 
-        choices  matrix of choices with tests in rows
-        outdir   output path 
-        csv      write csv output tables 
-        xls      write xls workbook output 
-    
     """
-    key = choices[0]              # key is the first test
-    key[key == -1] = -2           # -2 key allows -1 tests to score 0
-    scoring = choices == key      # score the tests    
-    score_by_test = sum(scoring, 1)
-    score_by_question = sum(scoring[1:, :], 0)
+    #score tests
+    key = choices[0]                # key is the first test
+    key[key == -1] = -2             # -2 key allows -1 tests to score 0
+    scoring = choices == key        # score all    
+    score_by_test = sum(scoring, 1) # score by test
+    score_by_question = sum(scoring[1:, :], 0) # exclude key
+    
+    # count choice frequency
+    counts = zeros((choices.shape[1], 9))
+    counts[:, 0] = range(1, 1 + choices.shape[1])      # question number
+    counts[:, 1] = choices[0, :]                       # correct choice 
+    counts[:, 2] = score_by_question                   # correct count by question (ex key)
+    for i in range(counts.shape[0]):                   # choice frequencies by question
+        counts[i, 3:9], _x = histogram(choices[1:, i], range(-1, 6))
     
     counts_header = ['Question', 'Key', 'CorrectCount', 
                      'None(-1)', 'A(0)', 'B(1)', 'C(2)', 'D(3)', 'E(4)']
                      
-    counts = zeros((choices.shape[1], 9))
-    counts[:, 0] = range(1, 1 + choices.shape[1])      # question
-    counts[:, 1] = choices[0, :]                       # key
-    counts[:, 2] = score_by_question                   # correct count by question (ex key)
-    for i in range(counts.shape[0]):                   # choice frequencies by question
-        counts[i, 3:9], _x = histogram(choices[1:, i], range(-1, 6))
-        
-    if csv:
+    if csv: # write csv outputs 
         savetxt(outdir['imagefiles.csv'], [i.name for i in images], fmt='%s')     
         savetxt(outdir['choices.csv'], choices, fmt='%i', delimiter=',')        
         savetxt(outdir['scoring.csv'], scoring, fmt='%i', delimiter=',')
         savetxt(outdir['questioninfo.csv'], counts, fmt='%i', delimiter=',', 
                     header=",".join(counts_header))
 
-    if xls:
+    if xls: # write xlsx outputs 
         name_files = sorted(outdir['names'].glob('*'), key=_NUMSORT)
     
         wb = openpyxl.Workbook()
@@ -111,17 +136,31 @@ def write_exam_group(images, choices, outdir, csv=False, xls=True):
 def write_xls_array(workbook, inarray, title=None, header=None, row=0, col=0, width=None, height=None):
     """write input array to a new sheet in input xlsx workbook
     
-    Parameters::
         
-        workbook  (openpyxl) xlsx workbook     
-        inarray   input array 
-        title     name of sheet 
-        header    header as list of strings 
-        row       starting row 
-        col       starting column
-        width     row width
-        height    row height
+    workbook  
+        xlsx workbook returned by openpyxl     
     
+    inarray   
+        input array 
+    
+    title     
+        name of sheet 
+    
+    header    
+        header as list of strings 
+    
+    row       
+        starting row 
+    
+    col       
+        starting column
+    
+    width     
+        row width
+    
+    height    
+        row height
+
     """
     ws = workbook.create_sheet()
     

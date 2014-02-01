@@ -9,9 +9,7 @@ import multiprocessing
 import sys
 import Tkinter
 
-from omr.exam_group import Main
-from omr.forms import FORMS
-from omr.gui import Gui
+import omr
 
 def parse_args():
     """parse command line arguments."""
@@ -24,15 +22,16 @@ def parse_args():
                         'Optional back side image directory')
         
     parser.add_argument('-f', '--form', default='882E', 
-                        choices=sorted(FORMS.keys()), help='Form string')
+                        choices=omr.FORMS.keys(), help='Form string')
     
     return parser.parse_args()
 
 if __name__ == '__main__':
-    multiprocessing.freeze_support()
+    if 'win' in sys.platform:
+        multiprocessing.freeze_support()
         
     if len(sys.argv) > 1:
-        multiprocessing.log_to_stderr()
+        multiprocessing.log_to_stderr()  
         args = parse_args()
         
         if getattr(sys, 'frozen', False):
@@ -40,7 +39,7 @@ if __name__ == '__main__':
         else:
             args.pool = multiprocessing.Pool()
         
-        Main(**vars(args))
+        omr.Main(**vars(args))
         
         if args.pool:
             args.pool.close()
@@ -50,7 +49,7 @@ if __name__ == '__main__':
     
     else:
         root = Tkinter.Tk()
-        app = Gui(root)
+        app = omr.Gui(root)
         root.update_idletasks()
         root.mainloop()
-    
+        

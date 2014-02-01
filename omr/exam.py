@@ -10,27 +10,20 @@ LOG = get_logger()
 
 def process_exam(imfile, formcfg):
     """Process input test image returning answer choices"""
-
-    form = Form(**formcfg)
-    
-    img = form.import_image(imfile)    
-    
-    img = form.fit_reference(img)    
-    
-    img, choices = form.get_choices(img)    
-    
-    form.write_validation(img, imfile)
-
     LOG.setLevel(20)
     LOG.info(imfile.name)
     LOG.setLevel(30)
-        
-    return choices
-
-
+    
+    return Form(**formcfg).from_file(imfile)
+    
 class Form:
     """Represents a generic exam form. Specify answer grid size properties, reference and info rectangles 
 
+    Specification of exam form properties. 
+    
+    - Black reference boxes to be fitted
+    - Info box containing written name  
+    - Answer bubble grid: (m, n) grid of answer bubble rectangles 
     
     Form specification
     ------------------  
@@ -120,6 +113,13 @@ class Form:
         """initialize form, calculate default coordinates.  """
         self.__dict__.update(kwargs)
         self._calc_coords()
+    
+    def from_file(self, imfile):
+        img = self.import_image(imfile)
+        img = self.fit_reference(img)
+        img, choices = self.get_choices(img)
+        self.write_validation(img, imfile)
+        return choices
         
     def import_image(self, imfile):
         """load image, check dpi, trim margins, check size fit image reference boxes"""
@@ -179,14 +179,11 @@ class Form:
     def _load_image(self, imfile):
         """open input image, correct dpi, return greyscale array"""
         im = Image.open(str(imfile))
-        
         dpi_ratio = num.true_divide(self.expected_dpi, num.array(im.info['dpi']))
         newsize = (num.array(im.size) * dpi_ratio).astype('i')
         if not all(newsize == num.array(im.size)):
             im = im.resize(newsize, Image.BICUBIC)
-        
         img = num.array(im.convert('L')) # convert to greyscale array 0-255
-        
         return img
 
     def _trim_margins(self, img):
@@ -281,11 +278,11 @@ class Form:
         Image.fromarray(img).save(str(val_file))
         
     def _save_info_image(self, img, imfile):
-        if self.info not in [[], None]:
+        if len(self.info):
             xmin, xmax, ymin, ymax = self.info
             nameimg = num.rot90(img[xmin:xmax, ymin:ymax])
     
-            if self.score not in [[], None]:
+            if len(self.score):
                 xmin, xmax, ymin, ymax = self.score
                 score = num.rot90(img[xmin:xmax, ymin:ymax])
                 nameimg = num.hstack([nameimg[30:75, :], score])
