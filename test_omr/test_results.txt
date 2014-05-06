@@ -1,0 +1,33 @@
+/usr/local/lib/python2.7/dist-packages/openpyxl/__init__.py:31: UserWarning: The installed version of lxml is too old to be used with openpyxl
+  warnings.warn("The installed version of lxml is too old to be used with openpyxl")
+usage: omrcmd.py [-h] [-b BACKDIR] [-f {882E}] frontdir
+
+Extract answer choices from scanned jpg bubble forms.
+
+positional arguments:
+  frontdir              Image directory.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b BACKDIR, --backdir BACKDIR
+                        Optional back side image directory
+  -f {882E}, --form {882E}
+                        Form string
+/usr/local/lib/python2.7/dist-packages/openpyxl/__init__.py:31: UserWarning: The installed version of lxml is too old to be used with openpyxl
+  warnings.warn("The installed version of lxml is too old to be used with openpyxl")
+single exam: mock output directories created ... ok
+No handlers could be found for logger "multiprocessing"
+exam group: all name images written ... ok
+exam group: output directories created ... ok
+exam group: all validation images written ... ok
+single exam: choices exist ... ok
+single exam: mock output directories created ... ok
+exam group: all name images written ... ok
+exam group: output directories created ... ok
+exam group: output files exist ... ok
+exam group: all validation images written ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 4.949s
+
+OK
