@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = "omr",
-    version = "0.0.7",
+    version = "0.0.73",
     author = "Greg Miller",
     author_email = "gmill002@gmail.com",
     description = "Bubble Vision: Optical Mark Reader",
@@ -22,7 +22,7 @@ setup(
       "numpy >= 1.8.0",
       "pillow >= 2.2.1",
       "openpyxl >= 1.6.2",
-      "PyYAML >= 3.10",],
+      "PyYAML >= 3.10", ],
     classifiers=[
       'Operating System :: OS Independent',
       'Programming Language :: Python',

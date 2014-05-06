@@ -73,10 +73,6 @@ Install
   * `openpyxl 1.6.2 <http://openpyxl.readthedocs.org/en/latest/>`_ read and write excel xlsx files.  
   * `pillow 2.2.1 <http://python-imaging.github.io/>`_ image manipulation. 
   * `yaml 3.10 <https://bitbucket.org/xi/pyyaml>`_ human friendly data serialization.
-
-* Prebuilt binaries
-
-  * Stand alone Windows exe (no parallel processing) 
   
 Example Validation Image
 ------------------------

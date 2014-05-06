@@ -13,33 +13,37 @@ test classes::
     test_write_exam_group  test exam group output
 
 """
-from pathlib import Path
+from pkg_resources import resource_filename
+import os
+import glob
 from random import randrange
 from shutil import copytree
 from unittest import TestCase
 
 from omr.exam_group import process_exam_group, write_exam_group
-from omr.exam import process_exam, Form
+from omr.exam import process_exam
 from omr.forms import FORMS
- 
-PACKAGE_ROOT = Path(str(__file__)).parent(2)    # package root
-TEST_DATA = PACKAGE_ROOT['test_data']  # testing data folder
-TEST_TEMP = PACKAGE_ROOT['test_tmp']   # temporary test output folder
+
+PACKAGE_DIR = os.path.dirname(resource_filename('omr', ''))
+TEST_DATA = os.path.join(PACKAGE_DIR, 'test_omr', 'test_data')  # testing data folder
+TEST_TEMP = os.path.join(PACKAGE_DIR, 'test_omr', 'test_tmp')   # temporary test output folder
+
 
 class OmrTestCase(TestCase):
     """create temp dir with required source image files"""
     @classmethod  
     def setUpClass(self):        
         """setup test fixture attributes (inherited by all tests)"""
-        rand_hex_str = '{}030x'.format(randrange(16**30))
-        self.path = TEST_TEMP[rand_hex_str]       # temp test dir
-        self.outdir = self.path['OMR']            # output dir
-        self.imfile = self.path['Image (0).jpg']  # single image
+        rand_hex_str = str(randrange(10e8))
+        self.path = os.path.join(TEST_TEMP, rand_hex_str)  # temp test dir
+        self.outdir = os.path.join(self.path, 'OMR')            # output dir
+        self.imfile = os.path.join(self.path, 'Image (0).jpg')  # single image
         self.form = '882E'
         self.side = 'front'
         self.formcfg = FORMS['882E']['front']
         
-        copytree(str(TEST_DATA), str(self.path))           # copy test data tp temp dir
+        copytree(TEST_DATA, self.path)           # copy test data tp temp dir
+
 
 class mock_exam_group(OmrTestCase):
     """setup exam group conditions to test single exam processing"""
@@ -47,13 +51,16 @@ class mock_exam_group(OmrTestCase):
     def setUpClass(self):
         """setup exam group conditions to test single exam processing"""
         super(mock_exam_group, self).setUpClass()
-        [x.mkdir() for x in [self.outdir, self.outdir['validation'], self.outdir['names']]]
-        
+        for p in ['', 'validation', 'names']:
+            f = os.path.join(self.outdir, p)
+            if not os.path.exists(f):
+                os.mkdir(f)
+
     def test_outpath_exists(self):
         """single exam: mock output directories created"""
-        self.assertTrue(self.outdir.exists())
-        self.assertTrue(self.outdir['names'].exists())    
-        self.assertTrue(self.outdir['validation'].exists())
+        self.assertTrue(os.path.exists(self.outdir))
+        self.assertTrue(os.path.exists(os.path.join(self.outdir, 'names')))
+        self.assertTrue(os.path.exists(os.path.join(self.outdir, 'validation')))
 
 
 class test_single_exam(mock_exam_group):
@@ -68,7 +75,8 @@ class test_single_exam(mock_exam_group):
     def test_choice(self):
         """single exam: choices exist"""
         self.assertTrue(len(self.choices) > 0)
-        
+
+
 class test_exam_group(OmrTestCase):
     """exam group tests"""
     @classmethod  
@@ -80,19 +88,20 @@ class test_exam_group(OmrTestCase):
         
     def test_outpath_exists(self):
         """exam group: output directories created"""
-        self.assertTrue(self.outdir.exists())
-        self.assertTrue(self.outdir['validation'].exists())
-        self.assertTrue(self.outdir['names'].exists())
+        self.assertTrue(os.path.exists(self.outdir))
+        self.assertTrue(os.path.exists(os.path.join(self.outdir, 'validation')))
+        self.assertTrue(os.path.exists(os.path.join(self.outdir, 'names')))
                 
     def test_validation_images_exist(self):
         """exam group: all validation images written"""
-        val_images = list(self.outdir['validation'].glob('*'))
+        val_images = glob.glob(os.path.join(self.outdir, 'validation', '*'))
         self.assertEqual(len(self.images), len(val_images))
     
     def test_name_images_exist(self):
         """exam group: all name images written"""
-        name_images = list(self.outdir['names'].glob('*'))
+        name_images = glob.glob(os.path.join(self.outdir, 'names', '*'))
         self.assertEqual(len(self.images), len(name_images)) 
+
 
 class test_write_exam_group(test_exam_group):
     """write exam group tests"""
@@ -105,4 +114,4 @@ class test_write_exam_group(test_exam_group):
     
     def test_output_files(self):
         """exam group: output files exist"""
-        self.assertTrue(self.outdir['results.xlsx'].exists())
+        self.assertTrue(os.path.exists(os.path.join(self.outdir, 'results.xlsx')))

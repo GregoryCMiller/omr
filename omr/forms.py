@@ -10,11 +10,11 @@ Forms are loaded (and overwritten) in the following order::
 """
 import sys
 import yaml
-
+import glob
 from collections import OrderedDict
-from os.path import exists
-from pathlib import Path
+from os.path import exists, dirname
 from pkg_resources import resource_filename
+
 
 def read_form(path):
     try:
@@ -22,6 +22,7 @@ def read_form(path):
             return yaml.safe_load(f)
     except yaml.YAMLError, e:
         print e
+
 
 DEFAULT = """
 882E:
@@ -72,7 +73,7 @@ DEFAULT = """
 """
 FORMS = OrderedDict(yaml.safe_load(DEFAULT))
 FILES = [resource_filename(__name__, 'forms.yaml'), ]
-if getattr(sys,'frozen', False):
-    FILES += map(str, Path(sys.executable).parent().glob('*.yaml'))
-    
+if getattr(sys, 'frozen', False):
+    FILES += map(str, glob.glob(dirname(sys.executable), '*.yaml'))
+
 map(FORMS.update, filter(None, map(read_form, filter(exists, FILES))))

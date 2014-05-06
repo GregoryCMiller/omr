@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# check module can import by trying help interface 
-python omr/exam.py --help
+# build documents
+#python epydoc.py --config DocConfig.py
 
-#doc tests
-python -m doctest omr/exam.py -v
+# check module can import by trying help interface 
+python omr/omrcmd.py --help 2>&1 | tee test_results.txt
 
 # run the unit tests
 rm -rf test_tmp
-nosetests -v test_omr/test_omr.py
+nosetests -v test_omr/test_omr.py 2>&1 | tee -a test_results.txt
 rm -rf test_tmp
 
-# run as gui
-rm -rf test_data/OMR
-python omr/exam.py
-rm -rf test_data/OMR
-
-
-
-
+# run gui
+#rm -rf test_data/OMR
+#python omr/omrcmd.py
+#rm -rf test_data/OMR
